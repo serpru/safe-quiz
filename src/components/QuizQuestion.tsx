@@ -1,7 +1,7 @@
 import { Button, Grid, Paper, Typography } from "@mui/material";
 
 import { useState } from "react";
-import { Question } from "../data/Question";
+import { Question } from "../models/Question";
 
 interface Props {
   questionCounter?: number;
@@ -18,7 +18,10 @@ export default function QuizQuestion({
   setQuestionCounter,
   setQuestions,
 }: Props) {
+
   function handleClick(questionIndex: number, answerIndex: number) {
+    //Post do histori api quizów
+    //handleClick - wyświetla przycisk na dole.
     const updatedQuestions = questionsData.map((question, i) => {
       if (questionIndex === i) {
         let x = { ...question, userAnswer: answerIndex };
@@ -53,6 +56,7 @@ export default function QuizQuestion({
               </Paper>
               <Grid container spacing={2}>
                 {question.answers.map((answer, answerIndex) => (
+                  //nowy container za kazdym razem do usuniecia
                   <Grid container spacing={2} key={answerIndex}>
                     <Grid item xs={6}>
                       <Button

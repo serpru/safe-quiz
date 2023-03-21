@@ -1,5 +1,5 @@
 import { Button, Grid, Paper, Typography } from "@mui/material";
-import { Question } from "../data/Question";
+import { Question } from "../models/Question";
 
 interface Props {
   questions: Question[];
