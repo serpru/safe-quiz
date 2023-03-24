@@ -42,11 +42,7 @@ export default function QuizScoreTable({ questions, setStepIndex }: Props) {
           </Grid>
         </Grid>
       </Paper>
-      <Button
-        color="primary"
-        variant="contained"
-        onClick={() => setStepIndex(1)}
-      >
+      <Button color="primary" variant="contained" href="/">
         Take the quiz again
       </Button>
     </>

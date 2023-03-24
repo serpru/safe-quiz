@@ -2,6 +2,8 @@ import { Button, Grid, Paper, Typography } from "@mui/material";
 
 import { useState } from "react";
 import { Question } from "../models/Question";
+import QuizQuestionAnswers from "./QuizQuestionAnswers";
+import QuizQuestionHeader from "./QuizQuestionHeader";
 
 interface Props {
   questionCounter?: number;
@@ -18,6 +20,7 @@ export default function QuizQuestion({
   setQuestionCounter,
   setQuestions,
 }: Props) {
+  const [nextQButtonVisible, setNextQButtonVisible] = useState(false);
 
   function handleClick(questionIndex: number, answerIndex: number) {
     //Post do histori api quizów
@@ -37,39 +40,46 @@ export default function QuizQuestion({
     console.log("Question index " + questionIndex);
     console.log("Answer index " + answerIndex);
 
+    setNextQButtonVisible(true);
+  }
+
+  function nextQuestion() {
     if (questionCounter >= questionsData.length) {
       setStepIndex(3);
       setQuestionCounter(1);
       return;
     }
     setQuestionCounter(questionCounter + 1);
+    setNextQButtonVisible(false);
   }
+
   return (
     <>
       {questionsData.map((question, questionIndex) => (
         <div key={questionIndex}>
           {questionCounter - 1 === questionIndex && (
             <div key={questionIndex}>
-              <Paper elevation={1}>
-                <Typography>{questionCounter}</Typography>
-                <Typography>Pytanie: {question.body}</Typography>
-              </Paper>
+              <QuizQuestionHeader questionCounter={questionCounter}>
+                {question.body}
+              </QuizQuestionHeader>
               <Grid container spacing={2}>
                 {question.answers.map((answer, answerIndex) => (
                   //nowy container za kazdym razem do usuniecia
-                  <Grid container spacing={2} key={answerIndex}>
-                    <Grid item xs={6}>
-                      <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={() => handleClick(questionIndex, answerIndex)}
-                      >
-                        {answer}
-                      </Button>
-                    </Grid>
+                  // <QuizQuestionAnswer onClick={handleClick}>{answer}</ QuizQuestionAnswer>
+                  <Grid item xs={6}>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      onClick={() => handleClick(questionIndex, answerIndex)}
+                    >
+                      {answer}
+                    </Button>
                   </Grid>
                 ))}
               </Grid>
+              {nextQButtonVisible && (
+                <Button onClick={nextQuestion}>Next question</Button>
+              )}
             </div>
           )}
         </div>
