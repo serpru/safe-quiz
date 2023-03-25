@@ -24,6 +24,14 @@ let questionTestObject: Question[] = [
     correctAnswer: 0,
   },
 ];
+
+let questionTest: Question = {
+  body: "Przykładowe pytanie, fajne?",
+  answers: ["Tak", "Nie", "Może", "Bynajmniej"],
+  userAnswer: -1,
+  correctAnswer: 0,
+};
+
 // TODO
 // <Quiz> powinien listować QuizQuestion w for loopie, nie QuizQuestion
 const numOfQuestions = questionTestObject.length;
@@ -31,17 +39,32 @@ const numOfQuestions = questionTestObject.length;
 export default function Quiz() {
   const [route, setRoute] = useState("/");
   const [stepIndex, setStepIndex] = useState(2);
+  const [question, setQuestion] = useState(questionTest);
   const [questionCounter, setQuestionCounter] = useState(1);
   const [questions, setQuestionTest] = useState(questionTestObject);
+  const [answerData, setAnswerData] = useState<any[]>([]);
+
+  const answers: any[] = answerData;
+
+  const handleChange = () => {
+    const answerInput = {
+      correctAnswer: question.correctAnswer,
+      userAnswer: question.userAnswer,
+    };
+    setAnswerData([...answerData, answerInput]);
+    console.log(answers);
+  };
+
   return (
     <div>
       {stepIndex === 2 && (
         <QuizQuestion
-          questionsData={questions}
+          question={questions[0]}
           questionCounter={questionCounter}
           setStepIndex={setStepIndex}
+          setQuestion={setQuestion}
           setQuestionCounter={setQuestionCounter}
-          setQuestions={setQuestionTest}
+          onChange={handleChange}
         />
       )}
       {stepIndex === 3 && (
@@ -52,4 +75,7 @@ export default function Quiz() {
       )}
     </div>
   );
+}
+function updateAnswerLog() {
+  return;
 }
