@@ -3,10 +3,10 @@ import { Question } from "../models/Question";
 
 interface Props {
   questions: Question[];
-  setStepIndex: (value: number) => void;
 }
 
-export default function QuizScoreTable({ questions, setStepIndex }: Props) {
+export default function QuizScoreTable({ questions }: Props) {
+  console.log(questions);
   return (
     <>
       <Paper elevation={1}>
@@ -16,8 +16,6 @@ export default function QuizScoreTable({ questions, setStepIndex }: Props) {
           </Grid>
           <Grid item xs={12}>
             {questions.map((item, index) => {
-              console.log("Correct answer" + item.correctAnswer);
-              console.log("User answer " + item.userAnswer);
               return (
                 <Grid container spacing={2} key={index}>
                   <Grid item xs={6}>

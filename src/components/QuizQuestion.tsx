@@ -8,21 +8,22 @@ import QuizQuestionHeader from "./QuizQuestionHeader";
 interface Props {
   questionCounter?: number;
   question: Question;
+  isLast: boolean;
   onChange: () => void;
   setQuestion: (question: Question) => void;
-  setStepIndex: (value: number) => void;
   setQuestionCounter: (value: number) => void;
 }
 
 export default function QuizQuestion({
   questionCounter = 1,
   question,
+  isLast,
   onChange,
   setQuestion,
-  setStepIndex,
   setQuestionCounter,
 }: Props) {
   const [nextQButtonVisible, setNextQButtonVisible] = useState(false);
+  const [finishQButtonVisible, setFinishQButtonVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(-1);
 
   function handleClick(answerIndex: number) {
@@ -37,12 +38,16 @@ export default function QuizQuestion({
     if (question.userAnswer == question.correctAnswer) {
       console.log("Odpowiedz poprawna!");
     }
-
-    setNextQButtonVisible(true);
+    if (isLast) {
+      setFinishQButtonVisible(true);
+    } else {
+      setNextQButtonVisible(true);
+    }
   }
 
   function nextQuestion() {
     setQuestionCounter(questionCounter + 1);
+    setSelectedItem(-1);
     setNextQButtonVisible(false);
   }
 
@@ -71,11 +76,21 @@ export default function QuizQuestion({
         {nextQButtonVisible && (
           <Button
             onClick={() => {
-              nextQuestion();
               onChange();
+              nextQuestion();
             }}
           >
             Next question
+          </Button>
+        )}
+        {finishQButtonVisible && (
+          <Button
+            href="\score"
+            onClick={() => {
+              onChange();
+            }}
+          >
+            Finish quiz
           </Button>
         )}
       </div>

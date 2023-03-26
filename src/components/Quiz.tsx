@@ -1,5 +1,6 @@
 import { Button, Grid, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useHref } from "react-router-dom";
 import { Question } from "../models/Question";
 import QuizQuestion from "./QuizQuestion";
 import QuizScoreTable from "./QuizScoreTable";
@@ -32,46 +33,47 @@ let questionTest: Question = {
   correctAnswer: 0,
 };
 
+interface Props {
+  answerData: Question[];
+  setAnswerData: (questions: Question[]) => void;
+}
+
 // TODO
 // <Quiz> powinien listować QuizQuestion w for loopie, nie QuizQuestion
-const numOfQuestions = questionTestObject.length;
+const numOfQuestions: number = 2;
 
-export default function Quiz() {
+export default function Quiz({ answerData, setAnswerData }: Props) {
   const [route, setRoute] = useState("/");
   const [stepIndex, setStepIndex] = useState(2);
   const [question, setQuestion] = useState(questionTest);
   const [questionCounter, setQuestionCounter] = useState(1);
   const [questions, setQuestionTest] = useState(questionTestObject);
-  const [answerData, setAnswerData] = useState<any[]>([]);
+  const [finishQButtonVisible, setFinishQButtonVisible] = useState(false);
 
-  const answers: any[] = answerData;
+  useEffect(() => {
+    console.log(answerData);
+  }, [answerData]);
 
   const handleChange = () => {
     const answerInput = {
       correctAnswer: question.correctAnswer,
       userAnswer: question.userAnswer,
     };
-    setAnswerData([...answerData, answerInput]);
-    console.log(answers);
+    console.log(question);
+    setAnswerData([...answerData, question]);
   };
 
   return (
     <div>
-      {stepIndex === 2 && (
+      {questionCounter <= numOfQuestions && (
         <QuizQuestion
-          question={questions[0]}
+          question={questions[questionCounter - 1]}
           questionCounter={questionCounter}
-          setStepIndex={setStepIndex}
+          isLast={questionCounter === numOfQuestions}
           setQuestion={setQuestion}
           setQuestionCounter={setQuestionCounter}
           onChange={handleChange}
         />
-      )}
-      {stepIndex === 3 && (
-        <QuizScoreTable
-          questions={questions}
-          setStepIndex={setStepIndex}
-        ></QuizScoreTable>
       )}
     </div>
   );
