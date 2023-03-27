@@ -12,7 +12,7 @@ export default function QuizQuestionHeader({
 }: Props) {
   return (
     <>
-      <Paper elevation={1}>
+      <Paper className="quiz-question-body" elevation={1}>
         <Typography>{questionCounter}</Typography>
         <Typography>Pytanie: {children}</Typography>
       </Paper>

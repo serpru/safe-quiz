@@ -1,0 +1,28 @@
+.quiz-header {
+  margin: 10px 0 10px 0;
+}
+
+.quiz {
+  margin-top: 5%;
+}
+
+.quiz-question {
+}
+
+.quiz-question-body {
+  padding: 2% 2% 2% 2%;
+}
+
+.quiz-question-buttons {
+  padding-bottom: 2%;
+  padding-top: 2%;
+}
+
+.quiz-button {
+  background-color: aquamarine;
+  padding: 15px 15px 15px 15px;
+  margin: 10% 10% 10% 10%;
+}
+
+body {
+}

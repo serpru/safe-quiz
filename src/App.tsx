@@ -1,5 +1,4 @@
-import { Avatar, Button, Grid, Paper } from "@mui/material";
-import Typography from "@mui/material/Typography";
+import { Avatar, Button, Grid, Paper, ThemeProvider } from "@mui/material";
 import { Container } from "@mui/system";
 import { useState } from "react";
 import "./App.css";
@@ -10,8 +9,36 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Question } from "./models/Question";
 import QuizSelect from "./components/QuizSelect";
-import QuizQuestion from "./components/QuizQuestion";
 import QuizScoreTable from "./components/QuizScoreTable";
+
+import { theme } from "./Theme";
+
+let questionTestObject: Question[] = [
+  {
+    body: "Kto stworzył system Linux?",
+    answers: ["Mark Zuckerberg", "Elderyu", "Linus Torvalds", "Savio"],
+    userAnswer: -1,
+    correctAnswer: 2,
+  },
+  {
+    body: "Kto chce wymyśleć pytanie z odpowiedziami?",
+    answers: [
+      "Nie ja - Elderyu",
+      "O co chodzi - Zakaridus",
+      "*cisza* - Pandek",
+      "*gra w Hadesa* - Mor",
+    ],
+    userAnswer: -1,
+    correctAnswer: 0,
+  },
+];
+
+let questionTEST: Question = {
+  body: "AHAH",
+  answers: ["Tak", "Nie", "Może", "Bynajmniej"],
+  userAnswer: -1,
+  correctAnswer: 0,
+};
 
 function App() {
   // TODO:
@@ -28,7 +55,7 @@ function App() {
   //const answers: any[] = answerData;
 
   return (
-    <div>
+    <ThemeProvider theme={theme}>
       <ResponsiveAppBar />
       <BrowserRouter>
         <Container maxWidth="sm">
@@ -46,12 +73,7 @@ function App() {
               path="/oferta"
               element={<Button href="cennik">Test</Button>}
             />
-            <Route
-              path="/quiz"
-              element={
-                <Quiz answerData={answerData} setAnswerData={setAnswerData} />
-              }
-            />
+            <Route path="/quiz" element={<Quiz />} />
             <Route path="/kontakt" element={<div>Hello, world!3</div>} />
             <Route path="/rejestracja" element={<div>Hello, world!4</div>} />
             <Route
@@ -61,7 +83,7 @@ function App() {
           </Routes>
         </Container>
       </BrowserRouter>
-    </div>
+    </ThemeProvider>
   );
 }
 

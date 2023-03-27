@@ -1,12 +1,40 @@
 import { Button, Grid, Paper, Typography } from "@mui/material";
+import { useEffect } from "react";
 import { Question } from "../models/Question";
+
+let answerData: Question[] = [
+  {
+    body: "Kto stworzył system Linux?",
+    answers: ["Mark Zuckerberg", "Elderyu", "Linus Torvalds", "Savio"],
+    userAnswer: 2,
+    correctAnswer: 2,
+  },
+  {
+    body: "Kto chce wymyśleć pytanie z odpowiedziami?",
+    answers: [
+      "Nie ja - Elderyu",
+      "O co chodzi - Zakaridus",
+      "*cisza* - Pandek",
+      "*gra w Hadesa* - Mor",
+    ],
+    userAnswer: -1,
+    correctAnswer: 0,
+  },
+];
 
 interface Props {
   questions: Question[];
 }
 
 export default function QuizScoreTable({ questions }: Props) {
-  console.log(questions);
+  function getDataFromAPI() {
+    console.log("Pobieranie danych z API...");
+  }
+
+  useEffect(() => {
+    getDataFromAPI();
+  }, []);
+
   return (
     <>
       <Paper elevation={1}>
@@ -15,7 +43,7 @@ export default function QuizScoreTable({ questions }: Props) {
             <Typography>Your score</Typography>
           </Grid>
           <Grid item xs={12}>
-            {questions.map((item, index) => {
+            {answerData.map((item, index) => {
               return (
                 <Grid container spacing={2} key={index}>
                   <Grid item xs={6}>

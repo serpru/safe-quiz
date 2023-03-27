@@ -1,38 +1,31 @@
-import { Button, Color, Grid } from "@mui/material";
+import { Box, Button, Color, Grid } from "@mui/material";
 import { color } from "@mui/system";
 import React, { ReactNode, useState } from "react";
 import { Question } from "../models/Question";
 
 interface Props {
-  children: ReactNode;
-  questionIndex: number;
+  children?: ReactNode;
+  selectedItem: number;
   answerIndex: number;
-  onClick: () => void;
+  onClick: (answerIndex: number) => void;
 }
 
 export default function QuizQuestionAnswer({
   children,
-  questionIndex,
+  selectedItem,
   answerIndex,
   onClick,
 }: Props) {
-  const [buttonColor, setButtonColor] = useState("primary");
-
-  function handleClick(answerIndex: number) {
-    if (answerIndex == questionIndex) setButtonColor("success");
-  }
-
   return (
-    <>
-      <Grid item xs={6}>
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={() => handleClick(answerIndex)}
-        >
-          {children}
-        </Button>
-      </Grid>
-    </>
+    <Box textAlign="center">
+      <Button
+        fullWidth
+        color={selectedItem === answerIndex ? "success" : "primary"}
+        variant={selectedItem === answerIndex ? "contained" : "outlined"}
+        onClick={() => onClick(answerIndex)}
+      >
+        {children}
+      </Button>
+    </Box>
   );
 }
