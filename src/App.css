@@ -9,7 +9,7 @@
 .quiz-question {
 }
 
-.quiz-question-body {
+.quiz-question-header {
   padding: 2% 2% 2% 2%;
 }
 
@@ -19,9 +19,16 @@
 }
 
 .quiz-button {
-  background-color: aquamarine;
   padding: 15px 15px 15px 15px;
   margin: 10% 10% 10% 10%;
+}
+
+.quiz-score {
+  padding: 2% 2% 2% 2%;
+}
+
+.quiz-score-body {
+  padding: 2% 0 2% 0;
 }
 
 body {

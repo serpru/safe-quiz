@@ -20,7 +20,7 @@ export default function QuizQuestionAnswer({
     <Box textAlign="center">
       <Button
         fullWidth
-        color={selectedItem === answerIndex ? "success" : "primary"}
+        color={"primary"}
         variant={selectedItem === answerIndex ? "contained" : "outlined"}
         onClick={() => onClick(answerIndex)}
       >

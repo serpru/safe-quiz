@@ -1,5 +1,5 @@
-import { Button, Grid, Paper, Typography } from "@mui/material";
-import { useEffect } from "react";
+import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { Question } from "../models/Question";
 
 let answerData: Question[] = [
@@ -27,6 +27,9 @@ interface Props {
 }
 
 export default function QuizScoreTable({ questions }: Props) {
+  const [correctScore, setCorrectScore] = useState<number>(0);
+  const [fullScore, setFullScore] = useState(0);
+
   function getDataFromAPI() {
     console.log("Pobieranie danych z API...");
   }
@@ -36,41 +39,54 @@ export default function QuizScoreTable({ questions }: Props) {
   }, []);
 
   return (
-    <>
-      <Paper elevation={1}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography>Your score</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            {answerData.map((item, index) => {
-              return (
-                <Grid container spacing={2} key={index}>
-                  <Grid item xs={6}>
-                    <Typography>Pytanie {index + 1}</Typography>
+    <div className="quiz quiz-score">
+      <Paper className="quiz-score-body" elevation={1}>
+        <Box textAlign="center">
+          <Grid
+            justifyContent={"space-evenly"}
+            container
+            rowSpacing={2}
+            spacing={2}
+          >
+            <Grid item xs={12}>
+              <Typography variant="h4" align="center">
+                Your score
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              {answerData.map((item, index) => {
+                return (
+                  <Grid container spacing={2} key={index}>
+                    <Grid item xs={6}>
+                      <Typography>Pytanie {index + 1}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      {item.userAnswer === item.correctAnswer ? (
+                        <Typography>✅</Typography>
+                      ) : (
+                        <Typography>❌</Typography>
+                      )}
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                    {item.userAnswer === item.correctAnswer ? (
-                      <Typography>✅</Typography>
-                    ) : (
-                      <Typography>❌</Typography>
-                    )}
-                  </Grid>
-                </Grid>
-              );
-            })}
+                );
+              })}
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Twój wynik</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography>
+                {correctScore} / {fullScore}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <Typography>Score Total</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography>Score ###</Typography>
-          </Grid>
-        </Grid>
+        </Box>
       </Paper>
-      <Button color="primary" variant="contained" href="/">
-        Take the quiz again
-      </Button>
-    </>
+      <Box className="quiz-question-buttons" textAlign="center">
+        <Button color="primary" variant="contained" href="/">
+          Take the quiz again
+        </Button>
+      </Box>
+    </div>
   );
 }

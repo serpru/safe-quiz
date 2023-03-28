@@ -2,7 +2,7 @@ import { Button, Grid, Paper, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import Box from "@mui/system/Box";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Question } from "../models/Question";
 import QuizQuestionAnswer from "./QuizQuestionAnswer";
 import QuizQuestionAnswers from "./QuizQuestionAnswer";
@@ -10,7 +10,7 @@ import QuizQuestionHeader from "./QuizQuestionHeader";
 
 interface Props {
   questionCounter?: number;
-  question: Question;
+  question: Question | null;
   isLast: boolean;
   setQuestionCounter: (value: number) => void;
   getNextQuestion: () => void;
@@ -35,9 +35,9 @@ export default function QuizQuestion({
     //   userAnswer: answerIndex,
     // });
 
-    console.log("User answer " + question.userAnswer);
+    console.log("User answer " + question?.userAnswer);
     console.log("Answer index " + answerIndex);
-    if (question.userAnswer == question.correctAnswer) {
+    if (question?.userAnswer == question?.correctAnswer) {
       console.log("Odpowiedz poprawna!");
     }
   }
@@ -63,7 +63,7 @@ export default function QuizQuestion({
       <div className="quiz-question" key={questionCounter}>
         <div>
           <QuizQuestionHeader questionCounter={questionCounter}>
-            {question.body}
+            {question?.body}
           </QuizQuestionHeader>
         </div>
         <Box className="quiz-question-buttons">
@@ -73,7 +73,7 @@ export default function QuizQuestion({
             spacing={2}
             rowSpacing={2}
           >
-            {question.answers.map((answer, answerIndex) => (
+            {question?.answers.map((answer, answerIndex) => (
               <Grid item xs={6} key={answerIndex}>
                 <QuizQuestionAnswer
                   selectedItem={selectedItem}
