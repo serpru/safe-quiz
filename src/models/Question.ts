@@ -1,6 +1,9 @@
+import { Answer } from "./Answer";
+
 export type Question = {
-    body: string;
-    answers: string[];
+    id: number,
+    name: string;
+    answers: Answer[];
     userAnswer: number;
     correctAnswer: number;
   };

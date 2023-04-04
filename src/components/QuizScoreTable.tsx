@@ -4,18 +4,57 @@ import { Question } from "../models/Question";
 
 let answerData: Question[] = [
   {
-    body: "Kto stworzył system Linux?",
-    answers: ["Mark Zuckerberg", "Elderyu", "Linus Torvalds", "Savio"],
-    userAnswer: 2,
+    id: 1,
+    name: "Kto stworzył system Linux?",
+    answers: [
+      {
+        id: 0,
+        idQuestion: 1,
+        name: "Ja",
+      },
+      {
+        id: 1,
+        idQuestion: 1,
+        name: "Bill Gates",
+      },
+      {
+        id: 2,
+        idQuestion: 1,
+        name: "Linus Torvalds",
+      },
+      {
+        id: 3,
+        idQuestion: 1,
+        name: "Steve Jobs",
+      },
+    ],
+    userAnswer: -1,
     correctAnswer: 2,
   },
   {
-    body: "Kto chce wymyśleć pytanie z odpowiedziami?",
+    id: 2,
+    name: "To jest pytanie drugie",
     answers: [
-      "Nie ja - Elderyu",
-      "O co chodzi - Zakaridus",
-      "*cisza* - Pandek",
-      "*gra w Hadesa* - Mor",
+      {
+        id: 0,
+        idQuestion: 2,
+        name: "Tak",
+      },
+      {
+        id: 1,
+        idQuestion: 2,
+        name: "Nie",
+      },
+      {
+        id: 2,
+        idQuestion: 2,
+        name: "Może",
+      },
+      {
+        id: 3,
+        idQuestion: 2,
+        name: "Bynajmniej",
+      },
     ],
     userAnswer: -1,
     correctAnswer: 0,

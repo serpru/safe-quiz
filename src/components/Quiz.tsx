@@ -6,27 +6,14 @@ import QuizQuestion from "./QuizQuestion";
 import QuizScoreTable from "./QuizScoreTable";
 import QuizSelect from "./QuizSelect";
 
-let question1: Question = {
-  body: "Przykładowe pytanie, fajne?",
-  answers: ["Tak", "Nie", "Może", "Bynajmniej"],
-  userAnswer: -1,
-  correctAnswer: 0,
-};
-
-let question2: Question = {
-  body: "SOME",
-  answers: ["BODY", "ONCE", "TOLD", "ME"],
-  userAnswer: -1,
-  correctAnswer: 0,
-};
-
 // TODO
 // <Quiz> powinien listować QuizQuestion w for loopie, nie QuizQuestion
 const numOfQuestions: number = 2;
 
 export default function Quiz() {
-  const [question, setQuestion] = useState(question1);
+  const [questionID, setQuestionID] = useState<number>(6);
   const [questionCounter, setQuestionCounter] = useState(1);
+  const [isLast, setIsLast] = useState(false);
 
   // Fetch, łączenie do API, prototyp
   const [data, setData] = useState<Question | null>(null);
@@ -34,9 +21,9 @@ export default function Quiz() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let body = new FormData();
-    body.append("id", questionCounter.toString());
-    fetch("https://pokeapi.co/api/v2/pokemon/ditto")
+    console.log(questionCounter);
+    setIsLast(questionCounter === numOfQuestions);
+    fetch("http://localhost:8080/questions/" + questionID)
       // dodać jako drugi argument (jak już będzie gotowe API {method: "POST",body: body,})
       .then((response) => {
         if (!response.ok) {
@@ -44,17 +31,13 @@ export default function Quiz() {
             `This is an HTTP error: The status is ${response.status}`
           );
         }
-        let questionFromAPI = {
-          body: "To jest pytanie z API",
-          answers: ["Fajnie", "Ok?", "Kłamstwo", "Modulo 7"],
-          userAnswer: 0,
-          correctAnswer: 0,
-        };
         console.log("Pobranie pytania z API");
-        return JSON.stringify(questionFromAPI);
+        return response.json();
       })
       .then((actualData) => {
-        let obj: Question = JSON.parse(actualData);
+        const obj: Question = actualData;
+        console.log("actual data");
+        console.log(actualData);
         setData(obj);
         setError(null);
       })
@@ -71,7 +54,7 @@ export default function Quiz() {
   function getNextQuestion() {
     // GET pytanie z API
     console.log("Kolejne pytanie");
-    setQuestion(question2);
+    setQuestionID(questionID + 1);
   }
 
   return (
@@ -84,7 +67,7 @@ export default function Quiz() {
         <QuizQuestion
           question={data}
           questionCounter={questionCounter}
-          isLast={questionCounter === numOfQuestions}
+          isLast={isLast}
           setQuestionCounter={setQuestionCounter}
           getNextQuestion={getNextQuestion}
         />

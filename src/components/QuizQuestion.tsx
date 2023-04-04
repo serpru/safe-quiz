@@ -63,7 +63,7 @@ export default function QuizQuestion({
       <div className="quiz-question" key={questionCounter}>
         <div>
           <QuizQuestionHeader questionCounter={questionCounter}>
-            {question?.body}
+            {question?.name}
           </QuizQuestionHeader>
         </div>
         <Box className="quiz-question-buttons">
@@ -80,7 +80,7 @@ export default function QuizQuestion({
                   answerIndex={answerIndex}
                   onClick={() => selectAnswer(answerIndex)}
                 >
-                  {answer}
+                  {answer.name}
                 </QuizQuestionAnswer>
               </Grid>
             ))}
