@@ -50,20 +50,30 @@ export default function QuizNewQuestionForm({ handleClose, handleAdd }: Props) {
   //     handleClose();
   //   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log(questionBody);
     console.log(questionAnswers);
     console.log(correctAnswer);
 
+    /**TODO: stworzyć obiekt QuestionRequest do dodawania/edycji pytań
+     * Question zostawić do manipulacji na froncie
+     * */
     let question: Question = {
-      id: -1,
       name: questionBody,
       answers: questionAnswers,
-      userAnswer: 0,
-      correctAnswer: +correctAnswer,
-    }; // have fun
-
-    console.log(JSON.stringify(question));
+    }; 
+    /**
+     * TODO: dodanie wybrania poprawnej odpowiedzi
+     */
+    const response  = await fetch("http://localhost:8080/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(question)});
+    console.log(response.json());
+    /** TODO: fajnie by było wyświetlić jakiś toast massage, że udało się dodać pytanie */
+    handleClose();
   };
 
   useEffect(() => {

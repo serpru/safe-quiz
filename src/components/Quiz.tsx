@@ -11,7 +11,7 @@ import QuizSelect from "./QuizSelect";
 const numOfQuestions: number = 2;
 
 export default function Quiz() {
-  const [questionID, setQuestionID] = useState<number>(6);
+  const [questionID, setQuestionID] = useState<number>(7);
   const [questionCounter, setQuestionCounter] = useState(1);
   const [isLast, setIsLast] = useState(false);
 
