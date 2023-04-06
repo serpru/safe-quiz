@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Question } from "../models/Question";
+import { Question } from "../../models/Question";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 interface Props {

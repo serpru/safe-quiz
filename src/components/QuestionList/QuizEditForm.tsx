@@ -16,8 +16,8 @@ import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Question } from "../models/Question";
-import { Answer } from "../models/Answer";
+import { Question } from "../../models/Question";
+import { Answer } from "../../models/Answer";
 
 interface Props {
   question: Question;
@@ -32,7 +32,7 @@ export default function QuizEditForm({
 }: Props) {
   const [questionBody, setQuestionBody] = useState(question.name);
   const [correctAnswer, setCorrectAnswer] = useState(
-    question.correctAnswer.toString()
+    question.correctAnswer?.toString()
   );
   const [questionAnswers, setQuestionAnswers] = useState<Answer[]>(
     question.answers
@@ -55,8 +55,8 @@ export default function QuizEditForm({
       name: questionBody,
       answers: questionAnswers,
       userAnswer: 0,
-      correctAnswer: +correctAnswer,
-    }; // have fun
+      correctAnswer: Number(correctAnswer),
+    };
 
     console.log(JSON.stringify(question));
   };
@@ -70,11 +70,18 @@ export default function QuizEditForm({
     setQuestionAnswers([...questionAnswers, x]);
   }
 
-  function handleDeleteAnswer(item: Answer) {
+  function handleDeleteAnswer(item: Answer, index: number) {
     console.log(item.id);
     console.log(questionAnswers);
     let a = questionAnswers.filter((x) => x.id !== item.id);
     setQuestionAnswers(a);
+    console.log("Po handleDelete");
+    console.log(questionAnswers);
+  }
+
+  function handleTextFieldChange(index: number) {
+    const list: Answer[] = [...questionAnswers];
+    setQuestionAnswers(list);
   }
 
   return (
@@ -103,44 +110,56 @@ export default function QuizEditForm({
             <Grid item xs={12}>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue={question.correctAnswer.toString()}
+                defaultValue={question.correctAnswer?.toString()}
                 name="radio-buttons-group"
                 onChange={handleRadioChange}
               >
-                {questionAnswers.map((item, i) => (
-                  <Grid item xs={12} key={i}>
-                    <TextField
-                      id="outlined-basic"
-                      label={"Odpowiedź"}
-                      variant="outlined"
-                      defaultValue={item.name}
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>
-                      ) => {
-                        let newQuestionAnswers = questionAnswers.map(
-                          (questionAnswer) => {
-                            if (questionAnswer === item) {
-                              return {
-                                ...questionAnswer,
-                                name: event.target.value,
-                              };
-                            } else {
-                              return questionAnswer;
-                            }
-                          }
-                        );
-                        setQuestionAnswers(newQuestionAnswers);
-                      }}
-                    />
-                    <FormControlLabel value={i} control={<Radio />} label="" />
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => handleDeleteAnswer(item)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Grid>
-                ))}
+                {questionAnswers.map(
+                  (item, i) => (
+                    console.log("item"),
+                    console.log(item.name),
+                    (
+                      <Grid item xs={12} key={i}>
+                        <TextField
+                          id="outlined-basic"
+                          label={"Odpowiedź"}
+                          variant="outlined"
+                          value={item.name}
+                          onChange={(
+                            event: React.ChangeEvent<HTMLInputElement>
+                          ) => {
+                            let newQuestionAnswers = questionAnswers.map(
+                              (questionAnswer) => {
+                                if (questionAnswer === item) {
+                                  return {
+                                    ...questionAnswer,
+                                    name: event.target.value,
+                                  };
+                                } else {
+                                  return questionAnswer;
+                                }
+                              }
+                            );
+                            setQuestionAnswers(newQuestionAnswers);
+                          }}
+                        />
+                        <FormControlLabel
+                          value={i}
+                          control={<Radio />}
+                          label=""
+                        />
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => {
+                            handleDeleteAnswer(item, i);
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Grid>
+                    )
+                  )
+                )}
               </RadioGroup>
               <FormHelperText>Text</FormHelperText>
             </Grid>

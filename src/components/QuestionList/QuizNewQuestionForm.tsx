@@ -15,8 +15,9 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import React, { useEffect, useState } from "react";
-import { Answer } from "../models/Answer";
-import { Question } from "../models/Question";
+import { Answer } from "../../models/Answer";
+import { Question } from "../../models/Question";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Props {
   handleClose: () => void;
@@ -61,16 +62,17 @@ export default function QuizNewQuestionForm({ handleClose, handleAdd }: Props) {
     let question: Question = {
       name: questionBody,
       answers: questionAnswers,
-    }; 
+    };
     /**
      * TODO: dodanie wybrania poprawnej odpowiedzi
      */
-    const response  = await fetch("http://localhost:8080/questions", {
+    const response = await fetch("http://localhost:8080/questions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(question)});
+      body: JSON.stringify(question),
+    });
     console.log(response.json());
     /** TODO: fajnie by było wyświetlić jakiś toast massage, że udało się dodać pytanie */
     handleClose();
@@ -122,7 +124,7 @@ export default function QuizNewQuestionForm({ handleClose, handleAdd }: Props) {
                       id="outlined-basic"
                       label={"Odpowiedź"}
                       variant="outlined"
-                      defaultValue={questionAnswers[i].name}
+                      value={item.name ? item.name : ""}
                       onChange={(
                         event: React.ChangeEvent<HTMLInputElement>
                       ) => {
@@ -142,6 +144,11 @@ export default function QuizNewQuestionForm({ handleClose, handleAdd }: Props) {
                       }}
                     />
                     <FormControlLabel value={i} control={<Radio />} label="" />
+                    {i > 1 && (
+                      <IconButton aria-label="delete">
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Grid>
                 ))}
               </RadioGroup>

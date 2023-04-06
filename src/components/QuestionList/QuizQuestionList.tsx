@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Question } from "../models/Question";
+import { Question } from "../../models/Question";
 import QuizQuestionListItem from "./QuizQuestionListItem";
 import QuizNewQuestionForm from "./QuizNewQuestionForm";
 import QuizEditForm from "./QuizEditForm";
@@ -78,12 +78,14 @@ let mockList: Question[] = [
 ];
 
 export default function QuizQuestionList() {
-  const [open, setOpen] = React.useState(false);
+  const [openAdd, setOpenAdd] = React.useState(false);
+  const [openEdit, setOpenEdit] = React.useState(false);
+
   const handleClose = () => {
-    setOpen(false);
+    setOpenAdd(false);
   };
   const handleToggle = () => {
-    setOpen(!open);
+    setOpenAdd(!openAdd);
   };
 
   const handleAddQuestion = () => {
@@ -117,10 +119,10 @@ export default function QuizQuestionList() {
       </Paper>
 
       {/* Do przeniesienia*/}
-      {open && (
+      {openAdd && (
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
+          open={openAdd}
         >
           <QuizNewQuestionForm
             handleClose={handleClose}

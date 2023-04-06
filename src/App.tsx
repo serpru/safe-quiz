@@ -17,10 +17,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Question } from "./models/Question";
 import QuizSelect from "./components/QuizSelect";
 import QuizScoreTable from "./components/QuizScoreTable";
-import QuizEditForm from "./components/QuizQuestionList";
+import QuizEditForm from "./components/QuestionList/QuizQuestionList";
 
 import { theme } from "./Theme";
-import QuizQuestionList from "./components/QuizQuestionList";
+import QuizQuestionList from "./components/QuestionList/QuizQuestionList";
 
 function App() {
   // TODO:
