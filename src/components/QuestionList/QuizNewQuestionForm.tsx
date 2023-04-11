@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   FormControl,
@@ -9,6 +10,7 @@ import {
   Paper,
   Radio,
   RadioGroup,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -88,83 +90,89 @@ export default function QuizNewQuestionForm({ handleClose, handleAdd }: Props) {
     //console.log(questionAnswers);
   }
   return (
-    <Paper className="quiz-question-header" elevation={1}>
-      <Box textAlign={"right"}>
-        <IconButton aria-label="delete" onClick={handleClose}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <Typography>Dodawanie nowego pytania</Typography>
-      <form>
-        <FormControl error={error} variant="standard">
-          <Grid container justifyContent={"center"} rowGap={0}>
-            <Grid item xs={12}>
-              <TextField
-                id="outlined-basic"
-                label={"Treść pytania"}
-                variant="outlined"
-                fullWidth
-                value={questionBody}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setQuestionBody(event.target.value);
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-                value={correctAnswer}
-                onChange={handleRadioChange}
-              >
-                {questionAnswers.map((item, i) => (
-                  <Grid item xs={12} key={i}>
-                    <TextField
-                      id="outlined-basic"
-                      label={"Odpowiedź"}
-                      variant="outlined"
-                      value={item.name ? item.name : ""}
-                      onChange={(
-                        event: React.ChangeEvent<HTMLInputElement>
-                      ) => {
-                        let newQuestionAnswers = questionAnswers.map(
-                          (questionAnswer) => {
-                            if (questionAnswer === item) {
-                              return {
-                                ...questionAnswer,
-                                name: event.target.value,
-                              };
-                            } else {
-                              return questionAnswer;
+    <>
+      <Paper className="quiz-question-header" elevation={1}>
+        <Box textAlign={"right"}>
+          <IconButton aria-label="delete" onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Typography>Dodawanie nowego pytania</Typography>
+        <form>
+          <FormControl error={error} variant="standard">
+            <Grid container justifyContent={"center"} rowGap={0}>
+              <Grid item xs={12}>
+                <TextField
+                  id="outlined-basic"
+                  label={"Treść pytania"}
+                  variant="outlined"
+                  fullWidth
+                  value={questionBody}
+                  onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setQuestionBody(event.target.value);
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <RadioGroup
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue="female"
+                  name="radio-buttons-group"
+                  value={correctAnswer}
+                  onChange={handleRadioChange}
+                >
+                  {questionAnswers.map((item, i) => (
+                    <Grid item xs={12} key={i}>
+                      <TextField
+                        id="outlined-basic"
+                        label={"Odpowiedź"}
+                        variant="outlined"
+                        value={item.name ? item.name : ""}
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>
+                        ) => {
+                          let newQuestionAnswers = questionAnswers.map(
+                            (questionAnswer) => {
+                              if (questionAnswer === item) {
+                                return {
+                                  ...questionAnswer,
+                                  name: event.target.value,
+                                };
+                              } else {
+                                return questionAnswer;
+                              }
                             }
-                          }
-                        );
-                        setQuestionAnswers(newQuestionAnswers);
-                      }}
-                    />
-                    <FormControlLabel value={i} control={<Radio />} label="" />
-                    {i > 1 && (
-                      <IconButton aria-label="delete">
-                        <DeleteIcon />
-                      </IconButton>
-                    )}
-                  </Grid>
-                ))}
-              </RadioGroup>
-              <FormHelperText>{helperText}</FormHelperText>
+                          );
+                          setQuestionAnswers(newQuestionAnswers);
+                        }}
+                      />
+                      <FormControlLabel
+                        value={i}
+                        control={<Radio />}
+                        label=""
+                      />
+                      {i > 1 && (
+                        <IconButton aria-label="delete">
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </Grid>
+                  ))}
+                </RadioGroup>
+                <FormHelperText>{helperText}</FormHelperText>
+              </Grid>
+              <Grid item xs={12}>
+                <IconButton onClick={handleAddAnswer}>
+                  <AddCircleIcon />
+                </IconButton>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <IconButton onClick={handleAddAnswer}>
-                <AddCircleIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-          <Button onClick={handleSubmit} variant="contained">
-            Dodaj pytanie
-          </Button>
-        </FormControl>
-      </form>
-    </Paper>
+            <Button onClick={handleSubmit} variant="contained">
+              Dodaj pytanie
+            </Button>
+          </FormControl>
+        </form>
+      </Paper>
+    </>
   );
 }

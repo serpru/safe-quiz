@@ -1,4 +1,5 @@
 import {
+  Alert,
   Backdrop,
   Box,
   Button,
@@ -9,6 +10,7 @@ import {
   Paper,
   Radio,
   RadioGroup,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -95,6 +97,24 @@ export default function QuizQuestionList() {
 
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState(-1);
 
+  //  Snackbar
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+  const handleClick = () => {
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
+
   return (
     <>
       <Paper className="quiz-question-header" elevation={1}>
@@ -103,17 +123,15 @@ export default function QuizQuestionList() {
           {mockList.map((question, index) => (
             <div key={index}>
               <QuizQuestionListItem question={question} />
-              <QuizEditForm
-                question={question}
-                handleClose={handleClose}
-                handleAdd={handleAddQuestion}
-              ></QuizEditForm>
             </div>
           ))}
         </Box>
         <Box textAlign="center">
           <Button variant="contained" onClick={handleToggle}>
             Dodaj
+          </Button>
+          <Button variant="contained" onClick={handleClick}>
+            Toast pytanie poprawnie dodane
           </Button>
         </Box>
       </Paper>
@@ -130,6 +148,20 @@ export default function QuizQuestionList() {
           ></QuizNewQuestionForm>
         </Backdrop>
       )}
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          This is a success message!
+        </Alert>
+      </Snackbar>
     </>
   );
 }
