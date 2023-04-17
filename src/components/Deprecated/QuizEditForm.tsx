@@ -18,21 +18,17 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Question } from "../../models/Question";
 import { Answer } from "../../models/Answer";
+import { QuestionRequest } from "../../models/QuestionRequest";
 
 interface Props {
   question: Question;
   handleClose: () => void;
-  handleAdd: () => void;
 }
 
-export default function QuizEditForm({
-  question,
-  handleClose,
-  handleAdd,
-}: Props) {
+export default function QuizEditForm({ question, handleClose }: Props) {
   const [questionBody, setQuestionBody] = useState(question.name);
   const [correctAnswer, setCorrectAnswer] = useState(
-    question.correctAnswer?.toString()
+    question.idCorrectAnswer?.toString()
   );
   const [questionAnswers, setQuestionAnswers] = useState<Answer[]>(
     question.answers
@@ -45,20 +41,39 @@ export default function QuizEditForm({
     //setError(false);
   };
 
-  const handleSubmit = () => {
+  const handleSubmitEdit = async () => {
     console.log(questionBody);
     console.log(questionAnswers);
     console.log(correctAnswer);
 
-    let question: Question = {
-      id: -1,
+    let questionReq: QuestionRequest = {
+      id: question.id,
       name: questionBody,
       answers: questionAnswers,
-      userAnswer: 0,
-      correctAnswer: Number(correctAnswer),
+      idCorrectAnswer: Number(correctAnswer),
     };
 
-    console.log(JSON.stringify(question));
+    console.log(JSON.stringify(questionReq));
+
+    const response = await fetch("http://localhost:8080/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(question),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `This is an HTTP error: The status is ${response.status}`
+          );
+        }
+        console.log("Pobranie pytania z API");
+        return response.json();
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
   useEffect(() => {
@@ -66,28 +81,23 @@ export default function QuizEditForm({
   }, [questionAnswers]);
 
   function handleAddAnswer() {
-    const x = { idQuestion: question.id } as Answer;
+    const x = { idQuestion: question.id, name: "" } as Answer;
     setQuestionAnswers([...questionAnswers, x]);
   }
 
   function handleDeleteAnswer(item: Answer, index: number) {
     console.log(item.id);
     console.log(questionAnswers);
-    let a = questionAnswers.filter((x) => x.id !== item.id);
+    let a = questionAnswers.filter((x, ind) => ind !== index);
     setQuestionAnswers(a);
     console.log("Po handleDelete");
     console.log(questionAnswers);
   }
 
-  function handleTextFieldChange(index: number) {
-    const list: Answer[] = [...questionAnswers];
-    setQuestionAnswers(list);
-  }
-
   return (
     <Paper className="quiz-question-header" elevation={1}>
       <Box textAlign={"right"}>
-        <IconButton aria-label="delete">
+        <IconButton onClick={handleClose} aria-label="delete">
           <CloseIcon />
         </IconButton>
       </Box>
@@ -110,7 +120,7 @@ export default function QuizEditForm({
             <Grid item xs={12}>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue={question.correctAnswer?.toString()}
+                defaultValue={question.idCorrectAnswer?.toString()}
                 name="radio-buttons-group"
                 onChange={handleRadioChange}
               >
@@ -169,7 +179,7 @@ export default function QuizEditForm({
               </IconButton>
             </Grid>
           </Grid>
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button variant="contained" onClick={handleSubmitEdit}>
             Zatwierdź
           </Button>
         </FormControl>

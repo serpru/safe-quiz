@@ -1,5 +1,6 @@
 import {
   Alert,
+  AlertColor,
   Backdrop,
   Box,
   Button,
@@ -14,11 +15,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Question } from "../../models/Question";
 import QuizQuestionListItem from "./QuizQuestionListItem";
 import QuizNewQuestionForm from "./QuizNewQuestionForm";
-import QuizEditForm from "./QuizEditForm";
+import QuizEditForm from "../Deprecated/QuizEditForm";
 
 let mockList: Question[] = [
   {
@@ -47,7 +48,7 @@ let mockList: Question[] = [
       },
     ],
     userAnswer: -1,
-    correctAnswer: 2,
+    idCorrectAnswer: 2,
   },
   {
     id: 2,
@@ -75,32 +76,108 @@ let mockList: Question[] = [
       },
     ],
     userAnswer: -1,
-    correctAnswer: 0,
+    idCorrectAnswer: 0,
   },
 ];
 
+let mockListIndexes = [1, 6, 7, 13, 14];
+
 export default function QuizQuestionList() {
+  const [mockQuestionList, setMockQuestionList] = useState<Question[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [selectEditItem, setSelectEditItem] = useState<Question | undefined>();
+
+  function addQuestionToList(question: Question) {
+    const newQuestionList = [...mockQuestionList, question];
+    setMockQuestionList(newQuestionList);
+  }
+
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
 
   const handleClose = () => {
     setOpenAdd(false);
   };
-  const handleToggle = () => {
+  const handleToggle = (item: Question | undefined) => {
+    setSelectEditItem(item);
     setOpenAdd(!openAdd);
   };
 
-  const handleAddQuestion = () => {
-    console.log("POST do API");
+  const handleSubmitQuestion = (status: number) => {
+    console.log("handleSubmitQuestion");
+    console.log(status);
+    handleOpenSnackbar(status);
     handleClose();
   };
+
+  useEffect(() => {
+    let textPromise = new Promise(() => {
+      fetch("http://localhost:8080/questions/" + 1)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(
+              `This is an HTTP error: The status is ${response.status}`
+            );
+          }
+          return response.json();
+        })
+        .then((actualData) => {
+          const obj: Question = actualData;
+          console.log("actual data");
+          //console.log(actualData);
+          addQuestionToList(obj);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        })
+        .finally(() => {
+          setMockQuestionList(mockList);
+        });
+    });
+
+    let textPromise2 = new Promise(() => {
+      fetch("http://localhost:8080/questions/" + 1)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(
+              `This is an HTTP error: The status is ${response.status}`
+            );
+          }
+          return response.json();
+        })
+        .then((actualData) => {
+          const obj: Question = actualData;
+          console.log("actual data");
+          //console.log(actualData);
+          addQuestionToList(obj);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        })
+        .finally(() => {});
+    });
+
+    Promise.all([textPromise, textPromise2]);
+    setLoading(false);
+    console.log("Mock list");
+    console.log(mockQuestionList);
+  }, []);
 
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState(-1);
 
   //  Snackbar
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handleClick = () => {
+  const handleOpenSnackbar = (status: number) => {
+    if (status === 200) {
+      setAlertText("Pomyślnie dodano pytanie");
+      setAlertTextSeverity("success");
+    } else if (status === 500) {
+      setAlertText("Wystąpił błąd");
+      setAlertTextSeverity("error");
+    }
     setOpenSnackbar(true);
   };
 
@@ -115,25 +192,44 @@ export default function QuizQuestionList() {
     setOpenSnackbar(false);
   };
 
+  //  Toast
+  const [alertText, setAlertText] = useState("Unknown alert");
+  const [alertTextSeverity, setAlertTextSeverity] =
+    useState<AlertColor>("warning");
+
   return (
     <>
       <Paper className="quiz-question-header" elevation={1}>
-        <Typography>Lista pytań</Typography>
-        <Box textAlign="center">
-          {mockList.map((question, index) => (
-            <div key={index}>
-              <QuizQuestionListItem question={question} />
-            </div>
-          ))}
-        </Box>
-        <Box textAlign="center">
-          <Button variant="contained" onClick={handleToggle}>
-            Dodaj
-          </Button>
-          <Button variant="contained" onClick={handleClick}>
-            Toast pytanie poprawnie dodane
-          </Button>
-        </Box>
+        {loading && <div>Ładowanie pytania</div>}
+        {!loading && (
+          <>
+            <Typography>Lista pytań</Typography>
+            <Box textAlign="center">
+              {mockQuestionList.map((question, index) => (
+                <div key={index}>
+                  <QuizQuestionListItem
+                    question={question}
+                    selectEditItem={handleToggle}
+                  />
+                </div>
+              ))}
+            </Box>
+            <Box textAlign="center">
+              <Button
+                variant="contained"
+                onClick={() => handleToggle(undefined)}
+              >
+                Dodaj
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => handleOpenSnackbar(400)}
+              >
+                Toast pytanie poprawnie dodane
+              </Button>
+            </Box>
+          </>
+        )}
       </Paper>
 
       {/* Do przeniesienia*/}
@@ -143,23 +239,25 @@ export default function QuizQuestionList() {
           open={openAdd}
         >
           <QuizNewQuestionForm
+            data={selectEditItem}
             handleClose={handleClose}
-            handleAdd={handleAddQuestion}
+            selectEditItem={setSelectEditItem}
+            handleSubmit={handleSubmitQuestion}
           ></QuizNewQuestionForm>
         </Backdrop>
       )}
 
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleClose}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
       >
         <Alert
           onClose={handleCloseSnackbar}
-          severity="success"
+          severity={alertTextSeverity}
           sx={{ width: "100%" }}
         >
-          This is a success message!
+          {alertText}
         </Alert>
       </Snackbar>
     </>

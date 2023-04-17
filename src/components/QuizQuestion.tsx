@@ -7,6 +7,7 @@ import { Question } from "../models/Question";
 import QuizQuestionAnswer from "./QuizQuestionAnswer";
 import QuizQuestionAnswers from "./QuizQuestionAnswer";
 import QuizQuestionHeader from "./QuizQuestionHeader";
+import { QuestionRequest } from "../models/QuestionRequest";
 
 interface Props {
   questionCounter?: number;
@@ -30,15 +31,11 @@ export default function QuizQuestion({
   function handleClick(answerIndex: number) {
     //Post do histori api quizów
     console.log("POST odpowiedzi usera do API");
-    // setQuestion({
-    //   ...question,
-    //   userAnswer: answerIndex,
-    // });
+    console.log("Wybrana odpowiedz");
+    console.log(selectedItem);
 
-    console.log("User answer " + question?.userAnswer);
-    console.log("Answer index " + answerIndex);
-    if (question?.userAnswer == question?.correctAnswer) {
-      console.log("Odpowiedz poprawna!");
+    if (isLast) {
+      console.log("Przekierowanie do tablicy wyników");
     }
   }
 
