@@ -4,6 +4,6 @@ import { AnswerRequest } from "./AnswerRequest";
 export type QuestionRequest = {
     id?: number,
     name: string;
-    idCorrectAnswer: number;
+    noCorrectAnswer: number;
     answers: AnswerRequest[];
   };

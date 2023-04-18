@@ -99,7 +99,7 @@ export default function QuizQuestion({
           <Button
             variant="contained"
             fullWidth
-            //href="\score"
+            href="\score"
             onClick={() => {
               handleClick(selectedItem);
             }}

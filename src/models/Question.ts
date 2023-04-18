@@ -4,7 +4,7 @@ import { Answer } from "./Answer";
 export type Question = {
     id?: number,
     name: string;
+    noCorrectAnswer: number;
     answers: Answer[];
     userAnswer?: number;
-    correctAnswer?: number;
   };

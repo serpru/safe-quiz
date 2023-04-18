@@ -11,81 +11,93 @@ let questions: Question[] = [
   {
     id: 1,
     name: "Kto stworzył system Linux?",
-    idCorrectAnswer: 2,
+    noCorrectAnswer: 2,
     answers: [
       {
         id: 23,
         idQuestion: 1,
         name: "Ja",
+        noAnswer: 1,
       },
       {
         id: 11,
         idQuestion: 1,
         name: "Bill Gates",
+        noAnswer: 2,
       },
       {
         id: 27,
         idQuestion: 1,
         name: "Linus Torvalds",
+        noAnswer: 3,
       },
       {
         id: 33,
         idQuestion: 1,
         name: "Steve Jobs",
+        noAnswer: 4,
       },
     ],
   },
   {
     id: 2,
     name: "To jest pytanie drugie",
-    idCorrectAnswer: 0,
+    noCorrectAnswer: 0,
     answers: [
       {
         id: 56,
         idQuestion: 2,
         name: "Tak",
+        noAnswer: 1,
       },
       {
         id: 13,
         idQuestion: 2,
         name: "Nie",
+        noAnswer: 2,
       },
       {
         id: 20,
         idQuestion: 2,
         name: "Może",
+        noAnswer: 3,
       },
       {
         id: 31,
         idQuestion: 2,
         name: "Bynajmniej",
+        noAnswer: 4,
       },
     ],
   },
   {
     id: 16,
     name: "To jest pytanie trzecie",
-    idCorrectAnswer: 0,
+    noCorrectAnswer: 0,
     answers: [
       {
         id: 98,
         idQuestion: 2,
         name: "OK",
+        noAnswer: 1,
       },
       {
         id: 113,
         idQuestion: 2,
         name: "FAJNIE",
+        noAnswer: 2,
       },
       {
         id: 220,
         idQuestion: 2,
         name: "NIECH TO DZIAŁA BŁAGAM",
+        noAnswer: 3,
       },
       {
         id: 341,
         idQuestion: 2,
         name: "KEK",
+        noAnswer: 4,
       },
     ],
   },
@@ -124,11 +136,10 @@ export default function Quiz() {
       .catch((err) => {
         //setError(err.message);
         setData(null);
-      })
-      .finally(() => {
         setLoading(false);
         setData(questions);
-      });
+      })
+      .finally(() => {});
   }, []);
 
   useEffect(() => {

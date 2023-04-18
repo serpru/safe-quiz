@@ -25,58 +25,66 @@ let mockList: Question[] = [
   {
     id: 1,
     name: "Kto stworzył system Linux?",
+    noCorrectAnswer: 2,
     answers: [
       {
         id: 0,
         idQuestion: 1,
         name: "Ja",
+        noAnswer: 0,
       },
       {
         id: 1,
         idQuestion: 1,
         name: "Bill Gates",
+        noAnswer: 1,
       },
       {
         id: 2,
         idQuestion: 1,
         name: "Linus Torvalds",
+        noAnswer: 2,
       },
       {
         id: 3,
         idQuestion: 1,
         name: "Steve Jobs",
+        noAnswer: 3,
       },
     ],
     userAnswer: -1,
-    idCorrectAnswer: 2,
   },
   {
     id: 2,
     name: "To jest pytanie drugie",
+    noCorrectAnswer: 0,
     answers: [
       {
         id: 0,
         idQuestion: 2,
         name: "Tak",
+        noAnswer: 0,
       },
       {
         id: 1,
         idQuestion: 2,
         name: "Nie",
+        noAnswer: 1,
       },
       {
         id: 2,
         idQuestion: 2,
         name: "Może",
+        noAnswer: 2,
       },
       {
         id: 3,
         idQuestion: 2,
         name: "Bynajmniej",
+        noAnswer: 3,
       },
     ],
     userAnswer: -1,
-    idCorrectAnswer: 0,
   },
 ];
 
@@ -114,7 +122,7 @@ export default function QuizQuestionList() {
 
   useEffect(() => {
     let textPromise = new Promise(() => {
-      fetch("http://localhost:8080/questions/" + 1)
+      fetch("http://localhost:8080/questions")
         .then((response) => {
           if (!response.ok) {
             throw new Error(
@@ -131,35 +139,12 @@ export default function QuizQuestionList() {
         })
         .catch((err) => {
           console.log(err.message);
-        })
-        .finally(() => {
           setMockQuestionList(mockList);
-        });
-    });
-
-    let textPromise2 = new Promise(() => {
-      fetch("http://localhost:8080/questions/" + 1)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(
-              `This is an HTTP error: The status is ${response.status}`
-            );
-          }
-          return response.json();
-        })
-        .then((actualData) => {
-          const obj: Question = actualData;
-          console.log("actual data");
-          //console.log(actualData);
-          addQuestionToList(obj);
-        })
-        .catch((err) => {
-          console.log(err.message);
         })
         .finally(() => {});
     });
 
-    Promise.all([textPromise, textPromise2]);
+    //Promise.all([textPromise, textPromise2]);
     setLoading(false);
     console.log("Mock list");
     console.log(mockQuestionList);

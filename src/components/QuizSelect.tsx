@@ -9,6 +9,9 @@ export default function QuizSelect() {
         <Button color="primary" variant="contained" href="/quiz">
           Start quiz
         </Button>
+        <Button color="primary" variant="contained" href="/edit-question">
+          Edycja pytań
+        </Button>
       </Box>
     </Container>
   );

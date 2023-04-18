@@ -129,10 +129,10 @@ export default function QuizQuestionListItem({
                   variant="outlined"
                   disabled={isDisabled}
                   color={
-                    index === question.idCorrectAnswer ? "success" : "warning"
+                    index === question.noCorrectAnswer ? "success" : "warning"
                   }
                 />
-                {index === question.idCorrectAnswer ? (
+                {index === question.noCorrectAnswer ? (
                   <CheckCircleIcon color="success" />
                 ) : (
                   <CancelIcon />

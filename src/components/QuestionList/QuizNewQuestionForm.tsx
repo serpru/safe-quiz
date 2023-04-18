@@ -36,7 +36,7 @@ export default function QuizNewQuestionForm({
   selectEditItem,
 }: Props) {
   const [correctAnswer, setCorrectAnswer] = useState(
-    data ? data.idCorrectAnswer : 0
+    data ? data.noCorrectAnswer : 0
   );
   const [error, setError] = useState(true);
   const [helperText, setHelperText] = useState("Choose wisely");
@@ -45,7 +45,10 @@ export default function QuizNewQuestionForm({
   const maxAnswers: number = 4;
 
   const [questionBody, setQuestionBody] = useState(data ? data.name : "");
-  let a = [{ name: "" }, { name: "" }] as Answer[];
+  let a = [
+    { name: "", noAnswer: 0 },
+    { name: "", noAnswer: 1 },
+  ] as Answer[];
   const [questionAnswers, setQuestionAnswers] = useState<Answer[]>(
     data ? data.answers : a
   );
@@ -70,7 +73,7 @@ export default function QuizNewQuestionForm({
     let question: QuestionRequest = {
       id: existingID,
       name: questionBody,
-      idCorrectAnswer: correctAnswer,
+      noCorrectAnswer: correctAnswer,
       answers: questionAnswers,
     };
     /**
@@ -124,13 +127,13 @@ export default function QuizNewQuestionForm({
   }, [questionAnswers, questionBody, correctAnswer]);
 
   function handleAddAnswer() {
-    // let indexArray: number[] = [0, 1, 2, 3];
-    // let qaIndexes: number[] = [];
-    // for (var i = 0; i < questionAnswers.length; i++) {
-    //   qaIndexes.push(questionAnswers[i].id);
-    // }
-    // let freeIndex: number[] = indexArray.filter((x) => !qaIndexes.includes(x));
-    const x = { name: "" } as Answer;
+    let indexArray: number[] = [0, 1, 2, 3];
+    let qaIndexes: number[] = [];
+    for (var i = 0; i < questionAnswers.length; i++) {
+      qaIndexes.push(questionAnswers[i].noAnswer);
+    }
+    let freeIndex: number[] = indexArray.filter((x) => !qaIndexes.includes(x));
+    const x = { name: "", noAnswer: freeIndex[0] } as Answer;
     setQuestionAnswers([...questionAnswers, x]);
   }
 
