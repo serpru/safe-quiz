@@ -1,71 +1,76 @@
 import { Box, Button, Grid, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Question } from "../models/Question";
+import { QuestionSummary } from "../models/QuestionSummary";
 
-let answerData: Question[] = [
+let answerData: QuestionSummary[] = [
   {
-    id: 1,
-    name: "Kto stworzył system Linux?",
-    answers: [
-      {
-        id: 0,
-        idQuestion: 1,
-        name: "Ja",
-        noAnswer: 0,
-      },
-      {
-        id: 1,
-        idQuestion: 1,
-        name: "Bill Gates",
-        noAnswer: 1,
-      },
-      {
-        id: 2,
-        idQuestion: 1,
-        name: "Linus Torvalds",
-        noAnswer: 2,
-      },
-      {
-        id: 3,
-        idQuestion: 1,
-        name: "Steve Jobs",
-        noAnswer: 3,
-      },
-    ],
-    userAnswer: -1,
-    noCorrectAnswer: 2,
+    question: {
+      id: 1,
+      name: "Kto stworzył system Linux?",
+      noCorrectAnswer: 2,
+      answers: [
+        {
+          id: 0,
+          idQuestion: 1,
+          name: "Ja",
+          noAnswer: 0,
+        },
+        {
+          id: 1,
+          idQuestion: 1,
+          name: "Bill Gates",
+          noAnswer: 1,
+        },
+        {
+          id: 2,
+          idQuestion: 1,
+          name: "Linus Torvalds",
+          noAnswer: 2,
+        },
+        {
+          id: 3,
+          idQuestion: 1,
+          name: "Steve Jobs",
+          noAnswer: 3,
+        },
+      ],
+    },
+    isCorrectAnswer: true,
   },
   {
-    id: 2,
-    name: "To jest pytanie drugie",
-    answers: [
-      {
-        id: 0,
-        idQuestion: 2,
-        name: "Tak",
-        noAnswer: 0,
-      },
-      {
-        id: 1,
-        idQuestion: 2,
-        name: "Nie",
-        noAnswer: 1,
-      },
-      {
-        id: 2,
-        idQuestion: 2,
-        name: "Może",
-        noAnswer: 2,
-      },
-      {
-        id: 3,
-        idQuestion: 2,
-        name: "Bynajmniej",
-        noAnswer: 3,
-      },
-    ],
-    userAnswer: 0,
-    noCorrectAnswer: 0,
+    question: {
+      id: 2,
+      name: "To jest pytanie drugie",
+      noCorrectAnswer: 0,
+      answers: [
+        {
+          id: 0,
+          idQuestion: 2,
+          name: "Tak",
+          noAnswer: 0,
+        },
+        {
+          id: 1,
+          idQuestion: 2,
+          name: "Nie",
+          noAnswer: 1,
+        },
+        {
+          id: 2,
+          idQuestion: 2,
+          name: "Może",
+          noAnswer: 2,
+        },
+        {
+          id: 3,
+          idQuestion: 2,
+          name: "Bynajmniej",
+          noAnswer: 3,
+        },
+      ],
+    },
+    isCorrectAnswer: false,
   },
 ];
 
@@ -77,7 +82,7 @@ export default function QuizScoreTable({ questions }: Props) {
   const [correctScore, setCorrectScore] = useState<number>(0);
   const [fullScore, setFullScore] = useState(0);
 
-  const [data, setData] = useState<Question[] | null>(null);
+  const [data, setData] = useState<QuestionSummary[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -98,7 +103,7 @@ export default function QuizScoreTable({ questions }: Props) {
         return response.json();
       })
       .then((actualData) => {
-        const obj: Question[] = actualData;
+        const obj: QuestionSummary[] = actualData;
         console.log("actual data");
         console.log(actualData);
         setData(obj);
@@ -106,19 +111,17 @@ export default function QuizScoreTable({ questions }: Props) {
       })
       .catch((err) => {
         //setError(err.message);
-        setData(null);
-      })
-      .finally(() => {
         setLoading(false);
         setData(answerData);
         setFullScore(answerData.length);
         for (var i = 0; i < answerData.length; i++) {
           // tutaj liczyć poprawne odpowiedzi
-          if (answerData[i].userAnswer === answerData[i].noCorrectAnswer) {
+          if (answerData[i].isCorrectAnswer) {
             setCorrectScore(correctScore + 1);
           }
         }
-      });
+      })
+      .finally(() => {});
   }
 
   useEffect(() => {
@@ -151,7 +154,7 @@ export default function QuizScoreTable({ questions }: Props) {
                           <Typography>Pytanie {index + 1}</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                          {item.userAnswer === item.noCorrectAnswer ? (
+                          {item.isCorrectAnswer ? (
                             <Typography>✅</Typography>
                           ) : (
                             <Typography>❌</Typography>

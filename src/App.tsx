@@ -7,7 +7,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { Container } from "@mui/system";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Quiz from "./components/Quiz";
 import QuizHeader from "./components/QuizHeader";
@@ -21,6 +21,7 @@ import QuizEditForm from "./components/QuestionList/QuizQuestionList";
 
 import { theme } from "./Theme";
 import QuizQuestionList from "./components/QuestionList/QuizQuestionList";
+import { QuizModel } from "./models/QuizModel";
 
 function App() {
   // TODO:
@@ -33,6 +34,12 @@ function App() {
   const [stepIndex, setStepIndex] = useState(1);
   const [questionCounter, setQuestionCounter] = useState(1);
   const [answerData, setAnswerData] = useState<Question[]>([]);
+
+  const [quiz, setQuiz] = useState<QuizModel | null>(null);
+
+  useEffect(() => {
+    console.log(quiz);
+  }, [quiz]);
 
   //const answers: any[] = answerData;
 
@@ -48,7 +55,7 @@ function App() {
               element={
                 <>
                   <QuizHeader />
-                  <QuizSelect />
+                  <QuizSelect setQuiz={() => setQuiz} />
                 </>
               }
             />

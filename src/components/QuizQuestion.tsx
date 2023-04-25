@@ -8,16 +8,23 @@ import QuizQuestionAnswer from "./QuizQuestionAnswer";
 import QuizQuestionAnswers from "./QuizQuestionAnswer";
 import QuizQuestionHeader from "./QuizQuestionHeader";
 import { QuestionRequest } from "../models/QuestionRequest";
+import { QuizHistoryRequest } from "../models/QuizHistoryRequest";
+import { useLocation } from "react-router-dom";
+import { QuizModel } from "../models/QuizModel";
 
 interface Props {
+  idAccount: number;
+  quiz: QuizModel;
   questionCounter?: number;
-  question: Question | null;
+  question: Question | undefined;
   isLast: boolean;
   setQuestionCounter: (value: number) => void;
   getNextQuestion: () => void;
 }
 
 export default function QuizQuestion({
+  idAccount,
+  quiz,
   questionCounter = 1,
   question,
   isLast,
@@ -28,15 +35,44 @@ export default function QuizQuestion({
   const [finishQButtonVisible, setFinishQButtonVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(-1);
 
-  function handleClick(answerIndex: number) {
+  async function handleClick(answerIndex: number) {
     //Post do histori api quizów
     console.log("POST odpowiedzi usera do API");
     console.log("Wybrana odpowiedz");
     console.log(selectedItem);
+    console.log("Tralala");
+
+    let request: QuizHistoryRequest = {
+      idAccount: idAccount,
+      idQuestion: question?.id,
+      idQuiz: quiz.id,
+      isCorrectAnswer: question?.noCorrectAnswer === answerIndex,
+    };
+
+    await fetch("http://localhost:8080/quiz-histories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `This is an HTTP error: The status is ${response.status}`
+          );
+        }
+        console.log("Wysłanie pytania do API");
+        return response.json();
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
 
     if (isLast) {
       console.log("Przekierowanie do tablicy wyników");
     }
+    nextQuestion();
   }
 
   function nextQuestion() {
@@ -89,7 +125,6 @@ export default function QuizQuestion({
             variant="contained"
             onClick={() => {
               handleClick(selectedItem);
-              nextQuestion();
             }}
           >
             Next question

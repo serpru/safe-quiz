@@ -20,6 +20,7 @@ import { Question } from "../../models/Question";
 import QuizQuestionListItem from "./QuizQuestionListItem";
 import QuizNewQuestionForm from "./QuizNewQuestionForm";
 import QuizEditForm from "../Deprecated/QuizEditForm";
+import { useLocation } from "react-router-dom";
 
 let mockList: Question[] = [
   {
@@ -97,6 +98,11 @@ export default function QuizQuestionList() {
 
   const [selectEditItem, setSelectEditItem] = useState<Question | undefined>();
 
+  const [data, setData] = useState<Question[] | null>(null);
+  const [error, setError] = useState(null);
+
+  const location = useLocation();
+
   function addQuestionToList(question: Question) {
     const newQuestionList = [...mockQuestionList, question];
     setMockQuestionList(newQuestionList);
@@ -132,14 +138,14 @@ export default function QuizQuestionList() {
           return response.json();
         })
         .then((actualData) => {
-          const obj: Question = actualData;
+          const obj: Question[] = actualData;
           console.log("actual data");
           //console.log(actualData);
-          addQuestionToList(obj);
+          setData(obj);
         })
         .catch((err) => {
           console.log(err.message);
-          setMockQuestionList(mockList);
+          setData(mockList);
         })
         .finally(() => {});
     });
@@ -190,7 +196,7 @@ export default function QuizQuestionList() {
           <>
             <Typography>Lista pytań</Typography>
             <Box textAlign="center">
-              {mockQuestionList.map((question, index) => (
+              {data?.map((question, index) => (
                 <div key={index}>
                   <QuizQuestionListItem
                     question={question}
