@@ -49,13 +49,19 @@ export default function QuizQuestion({
       isCorrectAnswer: question?.noCorrectAnswer === answerIndex,
     };
 
-    await fetch("http://localhost:8080/quiz-histories", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(request),
-    })
+    console.log("Request");
+    console.log(request);
+
+    const postRequest: Promise<Response> = await fetch(
+      "http://localhost:8080/quiz-histories",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(request),
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(

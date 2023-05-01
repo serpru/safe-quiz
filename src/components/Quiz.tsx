@@ -77,7 +77,7 @@ export default function Quiz() {
   }, [isLast]);
 
   useEffect(() => {
-    setQuestionCounter(location.state.quiz.idxNextQuestion + 1);
+    setQuestionCounter(location.state.quiz.idxNextQuestion);
   }, []);
 
   function getNextQuestion() {

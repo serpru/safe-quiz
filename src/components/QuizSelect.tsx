@@ -132,7 +132,7 @@ let mockData: QuizModel = {
       ],
     },
   ],
-  idxNextQuestion: 0,
+  idxNextQuestion: 1,
 };
 
 let idAccount = 1;
@@ -195,6 +195,7 @@ export default function QuizSelect({ setQuiz }: Props) {
         setData(null);
         setLoading(false);
         setData(mockData);
+        console.log(err.message);
       })
       .finally(() => {});
   }
