@@ -4,6 +4,8 @@ import {
   Backdrop,
   Box,
   Button,
+  ButtonGroup,
+  Divider,
   FormControl,
   FormControlLabel,
   Grid,
@@ -21,71 +23,24 @@ import QuizQuestionListItem from "./QuizQuestionListItem";
 import QuizNewQuestionForm from "./QuizNewQuestionForm";
 import QuizEditForm from "../Deprecated/QuizEditForm";
 import { useLocation } from "react-router-dom";
+import { ListItem } from "../../models/ListItem";
+import { Pagination } from "../../models/Pagination";
+import { PaginationResponse } from "../../models/PaginationResponse";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
 
-let mockList: Question[] = [
+let mockList: ListItem[] = [
   {
     id: 1,
     name: "Kto stworzył system Linux?",
-    noCorrectAnswer: 2,
-    answers: [
-      {
-        id: 0,
-        idQuestion: 1,
-        name: "Ja",
-        noAnswer: 0,
-      },
-      {
-        id: 1,
-        idQuestion: 1,
-        name: "Bill Gates",
-        noAnswer: 1,
-      },
-      {
-        id: 2,
-        idQuestion: 1,
-        name: "Linus Torvalds",
-        noAnswer: 2,
-      },
-      {
-        id: 3,
-        idQuestion: 1,
-        name: "Steve Jobs",
-        noAnswer: 3,
-      },
-    ],
-    userAnswer: -1,
   },
   {
     id: 2,
     name: "To jest pytanie drugie",
-    noCorrectAnswer: 0,
-    answers: [
-      {
-        id: 0,
-        idQuestion: 2,
-        name: "Tak",
-        noAnswer: 0,
-      },
-      {
-        id: 1,
-        idQuestion: 2,
-        name: "Nie",
-        noAnswer: 1,
-      },
-      {
-        id: 2,
-        idQuestion: 2,
-        name: "Może",
-        noAnswer: 2,
-      },
-      {
-        id: 3,
-        idQuestion: 2,
-        name: "Bynajmniej",
-        noAnswer: 3,
-      },
-    ],
-    userAnswer: -1,
   },
 ];
 
@@ -96,9 +51,11 @@ export default function QuizQuestionList() {
 
   const [loading, setLoading] = useState(true);
 
-  const [selectEditItem, setSelectEditItem] = useState<Question | undefined>();
+  const [selectEditItem, setSelectEditItem] = useState<ListItem | undefined>(
+    undefined
+  );
 
-  const [data, setData] = useState<Question[] | null>(null);
+  const [data, setData] = useState<ListItem[] | null>(null);
   const [error, setError] = useState(null);
 
   const location = useLocation();
@@ -111,11 +68,50 @@ export default function QuizQuestionList() {
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openEdit, setOpenEdit] = React.useState(false);
 
+  const defaultPagination: Pagination = {
+    pageNumber: 0,
+    pageSize: 5,
+    pageCount: 1,
+  };
+
+  let totalSum: number = 1;
+
+  let editItem: ListItem | undefined = undefined;
+
+  let testEdit: ListItem | undefined = {
+    id: 6,
+    name: "Test heh",
+  };
+
+  const [buttonList, setButtonList] = useState<number[]>([]);
+
+  const [pagination, setPagination] = useState<Pagination>(defaultPagination);
+
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const handlePageNumber = (pageNum: number) => {
+    setPagination({ ...pagination, pageNumber: pageNum });
+  };
+
+  const handleChangePage = (pageNum: number) => {
+    setCurrentPage(pageNum);
+    setPagination({ ...pagination, pageNumber: pageNum });
+  };
+
+  const handlePageSize = (size: number) => {
+    setPagination({
+      pageNumber: 0,
+      pageSize: size,
+      pageCount: Math.ceil(totalSum / size),
+    });
+  };
+
   const handleClose = () => {
     setOpenAdd(false);
   };
-  const handleToggle = (item: Question | undefined) => {
+  const handleToggle = (item: ListItem | undefined) => {
     setSelectEditItem(item);
+    editItem = item;
     setOpenAdd(!openAdd);
   };
 
@@ -127,34 +123,70 @@ export default function QuizQuestionList() {
   };
 
   useEffect(() => {
-    let textPromise = new Promise(() => {
-      fetch("http://localhost:8080/questions")
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(
-              `This is an HTTP error: The status is ${response.status}`
-            );
-          }
-          return response.json();
-        })
-        .then((actualData) => {
-          const obj: Question[] = actualData;
-          console.log("actual data");
-          //console.log(actualData);
-          setData(obj);
-        })
-        .catch((err) => {
-          console.log(err.message);
-          setData(mockList);
-        })
-        .finally(() => {});
-    });
-
     //Promise.all([textPromise, textPromise2]);
-    setLoading(false);
+    //setLoading(false);
+    getDataFromApi(defaultPagination);
+
     console.log("Mock list");
     console.log(mockQuestionList);
   }, []);
+
+  function getDataFromApi(page: Pagination) {
+    fetch(
+      "http://localhost:8080/questions/pagination/" +
+        page.pageNumber +
+        "/" +
+        page.pageSize
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `This is an HTTP error: The status is ${response.status}`
+          );
+        }
+        return response.json();
+      })
+      .then((actualData) => {
+        const obj: PaginationResponse = actualData;
+        console.log("actual data");
+        //console.log(actualData);
+        setData(obj.selectedRows);
+        totalSum = obj.totalSum;
+        console.log("Page count");
+        console.log(pagination.pageCount);
+
+        let newButtonItems: number[] = [];
+        for (
+          var i = 0;
+          i < Math.ceil(obj.totalSum / pagination.pageSize);
+          i++
+        ) {
+          newButtonItems.push(i);
+        }
+        console.log(newButtonItems);
+        setButtonList(newButtonItems);
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setData(mockList);
+      })
+      .finally(() => {});
+  }
+
+  function reloadPage() {
+    setLoading(true);
+    getDataFromApi(pagination);
+  }
+
+  //  Reload on pagination change
+  useEffect(() => {
+    setLoading(true);
+    console.log("Pagination totalSum check");
+    console.log(pagination);
+    getDataFromApi(pagination);
+  }, [pagination]);
 
   const [correctAnswerIndex, setCorrectAnswerIndex] = useState(-1);
 
@@ -191,46 +223,110 @@ export default function QuizQuestionList() {
   return (
     <>
       <Paper className="quiz-question-header" elevation={1}>
+        <Box textAlign="center">
+          <Button variant="contained" onClick={() => handleToggle(undefined)}>
+            Dodaj
+          </Button>
+          <Button variant="contained" onClick={() => handleOpenSnackbar(400)}>
+            Toast pytanie poprawnie dodane
+          </Button>
+        </Box>
+        <Divider />
         {loading && <div>Ładowanie pytania</div>}
         {!loading && (
           <>
             <Typography>Lista pytań</Typography>
+            <Box display={"flex"} justifyContent={"space-between"}>
+              <Typography>Pytań na stronie</Typography>
+              <Typography>Strona</Typography>
+            </Box>
+            <Box sx={{ display: "flex" }} justifyContent={"space-between"}>
+              <ButtonGroup variant="text" aria-label="text button group">
+                <Button
+                  variant={pagination.pageSize === 5 ? "contained" : "outlined"}
+                  onClick={() => handlePageSize(5)}
+                >
+                  5
+                </Button>
+                <Button
+                  variant={
+                    pagination.pageSize === 20 ? "contained" : "outlined"
+                  }
+                  onClick={() => handlePageSize(20)}
+                >
+                  20
+                </Button>
+                <Button
+                  variant={
+                    pagination.pageSize === 50 ? "contained" : "outlined"
+                  }
+                  onClick={() => handlePageSize(50)}
+                >
+                  50
+                </Button>
+              </ButtonGroup>
+              <ButtonGroup variant="text" aria-label="text button group">
+                {/* {buttonList.map((button, index) => (
+                  <Button
+                    disabled={button === pagination.pageNumber}
+                    key={index}
+                    onClick={() => handlePageNumber(button)}
+                  >
+                    {button + 1}
+                  </Button>
+                ))} */}
+                <Button
+                  disabled={pagination.pageNumber === 0}
+                  onClick={() => handlePageNumber(0)}
+                >
+                  <FirstPageIcon />
+                </Button>
+                <Button
+                  disabled={pagination.pageNumber === 0}
+                  onClick={() => handlePageNumber(0)}
+                >
+                  <NavigateBeforeIcon />
+                </Button>
+                <Button disabled>
+                  {pagination.pageNumber} / {buttonList.length - 1}
+                </Button>
+                <Button
+                  disabled={pagination.pageNumber === buttonList.length - 1}
+                  onClick={() => handlePageNumber(pagination.pageNumber + 1)}
+                >
+                  <NavigateNextIcon />
+                </Button>
+                <Button
+                  disabled={pagination.pageNumber === buttonList.length - 1}
+                  onClick={() => handlePageNumber(buttonList.length - 1)}
+                >
+                  <LastPageIcon />
+                </Button>
+              </ButtonGroup>
+            </Box>
+
             <Box textAlign="center">
               {data?.map((question, index) => (
                 <div key={index}>
                   <QuizQuestionListItem
-                    question={question}
+                    item={question}
                     selectEditItem={handleToggle}
                   />
+                  <Divider />
                 </div>
               ))}
-            </Box>
-            <Box textAlign="center">
-              <Button
-                variant="contained"
-                onClick={() => handleToggle(undefined)}
-              >
-                Dodaj
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => handleOpenSnackbar(400)}
-              >
-                Toast pytanie poprawnie dodane
-              </Button>
             </Box>
           </>
         )}
       </Paper>
 
-      {/* Do przeniesienia*/}
       {openAdd && (
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={openAdd}
         >
           <QuizNewQuestionForm
-            data={selectEditItem}
+            listItem={selectEditItem}
             handleClose={handleClose}
             selectEditItem={setSelectEditItem}
             handleSubmit={handleSubmitQuestion}

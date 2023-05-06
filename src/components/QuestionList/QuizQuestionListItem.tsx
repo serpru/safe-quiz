@@ -18,14 +18,15 @@ import QuizEditForm from "../Deprecated/QuizEditForm";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { ListItem } from "../../models/ListItem";
 
 interface Props {
-  question: Question;
-  selectEditItem: (item: Question | undefined) => void;
+  item: ListItem;
+  selectEditItem: (item: ListItem | undefined) => void;
 }
 
 export default function QuizQuestionListItem({
-  question,
+  item: question,
   selectEditItem,
 }: Props) {
   const [isDisabled, setIsDisabled] = useState(true);
@@ -56,7 +57,7 @@ export default function QuizQuestionListItem({
 
   async function handleDelete() {
     const response = await fetch(
-      "http://localhost:8080/questions/" + question.id,
+      "http://localhost:8081/questions/" + question.id,
       { method: "DELETE" }
     )
       .then((response) => {
@@ -76,72 +77,43 @@ export default function QuizQuestionListItem({
 
   return (
     <div>
-      <Paper className="quiz-question-list-item" variant="outlined">
+      <Box
+        className="form-item"
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TextField
+          id="outlined-basic"
+          defaultValue={question.name}
+          variant="outlined"
+          disabled={isDisabled}
+          fullWidth
+        />
         <Box
-          className="form-item"
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+          className="form-button"
+          sx={{ width: "40%", justifyContent: "space-between" }}
         >
-          <TextField
-            id="outlined-basic"
-            defaultValue={question.name}
-            variant="outlined"
-            disabled={isDisabled}
-            fullWidth
-          />
-          <Box
-            className="form-button"
-            sx={{ width: "40%", justifyContent: "space-between" }}
+          <Button
+            onClick={() => selectEditItem(question)}
+            sx={{ height: "60%", margin: "2% 2% 2% 2%" }}
+            variant="contained"
           >
-            <Button
-              onClick={() => selectEditItem(question)}
-              sx={{ height: "60%", margin: "2% 2% 2% 2%" }}
-              variant="contained"
-            >
-              Edytuj
-            </Button>
-            <Button
-              onClick={handleToggleDelete}
-              sx={{ height: "60%", margin: "2% 2% 2% 2%" }}
-              variant="contained"
-            >
-              Usuń
-            </Button>
-          </Box>
+            Edytuj
+          </Button>
+          <Button
+            onClick={handleToggleDelete}
+            sx={{ height: "60%", margin: "2% 2% 2% 2%" }}
+            variant="contained"
+          >
+            Usuń
+          </Button>
         </Box>
-        <Grid container columnGap={0}>
-          {question.answers.map((answer, index) => (
-            <Grid
-              item
-              xs={6}
-              key={index}
-              sx={{ display: "flex", justifyContent: "center" }}
-              justifyItems={"center"}
-            >
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <TextField
-                  id="outlined-basic"
-                  defaultValue={answer.name}
-                  variant="outlined"
-                  disabled={isDisabled}
-                  color={
-                    index === question.noCorrectAnswer ? "success" : "warning"
-                  }
-                />
-                {index === question.noCorrectAnswer ? (
-                  <CheckCircleIcon color="success" />
-                ) : (
-                  <CancelIcon />
-                )}
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </Paper>
+      </Box>
+
       {openDelete && (
         <Backdrop
           sx={{

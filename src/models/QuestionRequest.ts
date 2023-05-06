@@ -5,5 +5,6 @@ export type QuestionRequest = {
     id?: number,
     name: string;
     noCorrectAnswer: number;
+    questionType: number;
     answers: AnswerRequest[];
   };

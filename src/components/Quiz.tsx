@@ -24,35 +24,6 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   //  TODO Fetch do API po listę pytań
-  //   fetch("http://localhost:8080/questions")
-  //     // dodać jako drugi argument (jak już będzie gotowe API {method: "POST",body: body,})
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error(
-  //           `This is an HTTP error: The status is ${response.status}`
-  //         );
-  //       }
-  //       console.log("Pobranie pytania z API");
-  //       return response.json();
-  //     })
-  //     .then((actualData) => {
-  //       const obj: Question[] = actualData;
-  //       console.log("actual data");
-  //       console.log(actualData);
-  //       setData(obj);
-  //       setError(null);
-  //     })
-  //     .catch((err) => {
-  //       //setError(err.message);
-  //       setData(null);
-  //       setLoading(false);
-  //       setData(questions);
-  //     })
-  //     .finally(() => {});
-  // }, []);
-
   useEffect(() => {
     console.log("Num of q");
     console.log(location.state.quiz.questions.length);

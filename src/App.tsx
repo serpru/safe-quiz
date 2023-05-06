@@ -24,11 +24,6 @@ import QuizQuestionList from "./components/QuestionList/QuizQuestionList";
 import { QuizModel } from "./models/QuizModel";
 
 function App() {
-  // TODO:
-  // deserializacja (?) JSONa
-  // wyświetlanie Score'a
-  // user profile, nawigacja po appce
-
   const [route, setRoute] = useState("/");
 
   const [stepIndex, setStepIndex] = useState(1);
@@ -40,8 +35,6 @@ function App() {
   useEffect(() => {
     console.log(quiz);
   }, [quiz]);
-
-  //const answers: any[] = answerData;
 
   return (
     <ThemeProvider theme={theme}>
@@ -60,7 +53,7 @@ function App() {
               }
             />
             <Route
-              path="/oferta"
+              path="/ranking"
               element={<Button href="cennik">Test</Button>}
             />
             <Route path="/quiz" element={<Quiz />} />

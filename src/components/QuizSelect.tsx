@@ -132,10 +132,8 @@ let mockData: QuizModel = {
       ],
     },
   ],
-  idxNextQuestion: 1,
+  idxNextQuestion: 0,
 };
-
-let idAccount = 1;
 
 interface Props {
   setQuiz: (id: QuizModel | null) => void;
@@ -145,7 +143,7 @@ export default function QuizSelect({ setQuiz }: Props) {
   const [data, setData] = useState<QuizModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const idAccount = 1;
   const navigate = useNavigate();
   const openQuiz = (quiz: QuizModel | null, idAccount: number) => {
     navigate("/quiz", {
@@ -172,6 +170,7 @@ export default function QuizSelect({ setQuiz }: Props) {
 
   function getDataFromApi() {
     //  TODO Fetch do API po listę pytań
+
     fetch("http://localhost:8080/quizzes/" + idAccount)
       // dodać jako drugi argument (jak już będzie gotowe API {method: "POST",body: body,})
       .then((response) => {
@@ -188,14 +187,15 @@ export default function QuizSelect({ setQuiz }: Props) {
         console.log("actual data");
         console.log(actualData);
         setData(obj);
+        setLoading(false);
         setError(null);
       })
       .catch((err) => {
-        //setError(err.message);
-        setData(null);
-        setLoading(false);
-        setData(mockData);
         console.log(err.message);
+        //setData(null);
+        setLoading(false);
+        //setData(mockData);
+        setError(err);
       })
       .finally(() => {});
   }

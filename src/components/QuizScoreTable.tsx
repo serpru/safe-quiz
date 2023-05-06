@@ -2,6 +2,7 @@ import { Box, Button, Grid, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Question } from "../models/Question";
 import { QuestionSummary } from "../models/QuestionSummary";
+import { Summary } from "../models/Summary";
 
 let answerData: QuestionSummary[] = [
   {
@@ -80,9 +81,9 @@ interface Props {
 
 export default function QuizScoreTable({ questions }: Props) {
   const [correctScore, setCorrectScore] = useState<number>(0);
-  const [fullScore, setFullScore] = useState(0);
+  const [fullScore, setFullScore] = useState<number|undefined>(0);
 
-  const [data, setData] = useState<QuestionSummary[] | null>(null);
+  const [data, setData] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -91,7 +92,7 @@ export default function QuizScoreTable({ questions }: Props) {
     // quizzes/summary/id
 
     //  TODO Fetch do API po listę pytań
-    fetch("http://localhost:8080/quizzes/summary/" + 1)
+    fetch("http://localhost:8081/quizzes/summary/" + 1)
       // dodać jako drugi argument (jak już będzie gotowe API {method: "POST",body: body,})
       .then((response) => {
         if (!response.ok) {
@@ -103,23 +104,33 @@ export default function QuizScoreTable({ questions }: Props) {
         return response.json();
       })
       .then((actualData) => {
-        const obj: QuestionSummary[] = actualData;
+        const obj: Summary = actualData;
         console.log("actual data");
         console.log(actualData);
         setData(obj);
+        setFullScore(obj.questionSummary.length);
+        let correct = 0
+        for (var i = 0; i < obj.questionSummary.length; i++) {
+          // tutaj liczyć poprawne odpowiedzi
+          if (obj.questionSummary[i].isCorrectAnswer) {
+            correct+=1;
+          }
+        }
+        setCorrectScore(correct);
         setError(null);
+        setLoading(false);
       })
       .catch((err) => {
         //setError(err.message);
-        setLoading(false);
-        setData(answerData);
-        setFullScore(answerData.length);
-        for (var i = 0; i < answerData.length; i++) {
-          // tutaj liczyć poprawne odpowiedzi
-          if (answerData[i].isCorrectAnswer) {
-            setCorrectScore(correctScore + 1);
-          }
-        }
+        //setLoading(false);
+        // setData(answerData);
+        // setFullScore(answerData.length);
+        // for (var i = 0; i < answerData.length; i++) {
+        //   // tutaj liczyć poprawne odpowiedzi
+        //   if (answerData[i].isCorrectAnswer) {
+        //     setCorrectScore(correctScore + 1);
+        //   }
+        // }
       })
       .finally(() => {});
   }
@@ -147,7 +158,7 @@ export default function QuizScoreTable({ questions }: Props) {
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  {answerData.map((item, index) => {
+                  {data?.questionSummary.map((item, index) => {
                     return (
                       <Grid container spacing={2} key={index}>
                         <Grid item xs={6}>

@@ -49,19 +49,13 @@ export default function QuizQuestion({
       isCorrectAnswer: question?.noCorrectAnswer === answerIndex,
     };
 
-    console.log("Request");
-    console.log(request);
-
-    const postRequest: Promise<Response> = await fetch(
-      "http://localhost:8080/quiz-histories",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      }
-    )
+    await fetch("http://localhost:8081/quiz-histories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(
@@ -69,6 +63,7 @@ export default function QuizQuestion({
           );
         }
         console.log("Wysłanie pytania do API");
+        nextQuestion();
         return response.json();
       })
       .catch((err) => {
@@ -78,7 +73,7 @@ export default function QuizQuestion({
     if (isLast) {
       console.log("Przekierowanie do tablicy wyników");
     }
-    nextQuestion();
+    
   }
 
   function nextQuestion() {

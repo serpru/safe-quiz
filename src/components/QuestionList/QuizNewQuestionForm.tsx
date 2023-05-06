@@ -7,9 +7,13 @@ import {
   FormHelperText,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
   Radio,
   RadioGroup,
+  Select,
+  SelectChangeEvent,
   Snackbar,
   TextField,
   Typography,
@@ -21,37 +25,41 @@ import { Answer } from "../../models/Answer";
 import { Question } from "../../models/Question";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { QuestionRequest } from "../../models/QuestionRequest";
+import { ListItem } from "../../models/ListItem";
 
 interface Props {
-  data?: Question;
+  listItem?: ListItem;
   handleClose: () => void;
   handleSubmit: (status: number) => void;
-  selectEditItem?: (item: Question | undefined) => void;
+  selectEditItem?: (item: ListItem | undefined) => void;
 }
 
 export default function QuizNewQuestionForm({
-  data,
+  listItem,
   handleClose,
   handleSubmit: handleSubmit,
   selectEditItem,
 }: Props) {
-  const [correctAnswer, setCorrectAnswer] = useState(
-    data ? data.noCorrectAnswer : 0
-  );
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<Question | null>(null);
   const [error, setError] = useState(true);
   const [helperText, setHelperText] = useState("Choose wisely");
   const [disableButton, setDisableButton] = useState(true);
+  const [questionType, setQuestionType] = useState<number>();
+  const [questionTypeLabel, setQuestionTypeLabel] = useState("1");
+
+  const [correctAnswer, setCorrectAnswer] = useState(
+    data ? data.noCorrectAnswer : 0
+  );
 
   const maxAnswers: number = 4;
 
-  const [questionBody, setQuestionBody] = useState(data ? data.name : "");
+  const [questionBody, setQuestionBody] = useState("");
   let a = [
     { name: "", noAnswer: 0 },
     { name: "", noAnswer: 1 },
   ] as Answer[];
-  const [questionAnswers, setQuestionAnswers] = useState<Answer[]>(
-    data ? data.answers : a
-  );
+  const [questionAnswers, setQuestionAnswers] = useState<Answer[]>(a);
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCorrectAnswer(Number((event.target as HTMLInputElement).value));
@@ -61,24 +69,22 @@ export default function QuizNewQuestionForm({
     console.log(questionBody);
     console.log(questionAnswers);
     console.log(correctAnswer);
+    console.log(questionType);
 
-    /**TODO: stworzyć obiekt QuestionRequest do dodawania/edycji pytań
-     * Question zostawić do manipulacji na froncie
-     * */
     var existingID = undefined;
-    if (data) {
-      existingID = data.id;
+    if (listItem) {
+      console.log(data);
+      existingID = data?.id;
     }
 
     let question: QuestionRequest = {
       id: existingID,
       name: questionBody,
       noCorrectAnswer: correctAnswer,
+      questionType: questionType!,
       answers: questionAnswers,
     };
-    /**
-     * TODO: dodanie wybrania poprawnej odpowiedzi
-     */
+    console.log(question.id);
     const response = await fetch("http://localhost:8080/questions", {
       method: "POST",
       headers: {
@@ -88,43 +94,76 @@ export default function QuizNewQuestionForm({
     })
       .then((response) => {
         if (!response.ok) {
+          handleSubmit(response.status);
           throw new Error(
             `This is an HTTP error: The status is ${response.status}`
           );
         }
         console.log("Pobranie pytania z API");
+        handleClose();
+
+        if (response === undefined) {
+          handleSubmit(500);
+        } else {
+          console.log("RESPONSE STATUS");
+          console.log(response.status);
+          //console.log(response.json());
+          handleSubmit(response.status);
+        }
+
         return response.json();
       })
       .catch((err) => {
         console.log(err.message);
       });
-    if (response === undefined) {
-      handleSubmit(500);
-    } else {
-      console.log(response.status);
-      console.log(response.json());
-      handleSubmit(response.status);
-    }
-    handleClose();
   };
 
   useEffect(() => {
-    if (data) {
-      // let emptyQuestion: Question = {
-      //   name: "",
-      //   answers: [],
-      //   idCorrectAnswer: 0,
-      // };
-      selectEditItem!(data);
+    if (listItem) {
+      console.log("ID PYTANIA DO EDYCJI");
+      console.log(listItem);
+      fetch("http://localhost:8080/questions/" + listItem.id)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(
+              `This is an HTTP error: The status is ${response.status}`
+            );
+          }
+          return response.json();
+        })
+        .then((actualData) => {
+          const obj: Question = actualData;
+          console.log("actual data");
+          //console.log(actualData);
+          setData(obj);
+          setCorrectAnswer(obj.noCorrectAnswer);
+          setQuestionBody(obj.name);
+          setQuestionAnswers(obj.answers);
+          setQuestionType(obj.questionType);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        })
+        .finally(() => {});
+    } else {
+      const emptyQuestion: Question = {
+        name: "",
+        answers: [],
+        noCorrectAnswer: 0,
+      };
+      setData(emptyQuestion);
     }
   }, []);
 
   useEffect(() => {
     console.log(questionAnswers);
-    console.log("Correct answer");
-    console.log(correctAnswer);
+    // console.log("Correct answer");
+    // console.log(correctAnswer);
+    // console.log("Question type");
+    // console.log(questionType);
     validateForm();
-  }, [questionAnswers, questionBody, correctAnswer]);
+  }, [questionAnswers, questionBody, correctAnswer, questionType]);
 
   function handleAddAnswer() {
     let indexArray: number[] = [0, 1, 2, 3];
@@ -147,27 +186,32 @@ export default function QuizNewQuestionForm({
     console.log(questionAnswers);
   }
 
+  function handleQuestionTypeChange(event: SelectChangeEvent) {
+    setQuestionType(Number(event.target.value));
+    setQuestionTypeLabel(event.target.value as string);
+  }
+
   function validateForm() {
-    if (questionAnswers.length < 2) {
+    if (questionAnswers?.length < 2) {
       setHelperText("Za mało odpowiedzi");
       setDisableButton(true);
       setError(true);
       return;
     }
-    if (questionBody.length < 3) {
+    if (questionBody?.length < 3) {
       setHelperText("Pytanie jest za krótkie");
       setDisableButton(true);
       setError(true);
       return;
     }
-    if (correctAnswer >= questionAnswers.length) {
+    if (correctAnswer >= questionAnswers?.length) {
       setHelperText("Wybierz, która odpowiedź ma być poprawna");
       setDisableButton(true);
       setError(true);
       return;
     }
-    for (var i = 0; i < questionAnswers.length; i++) {
-      if (questionAnswers[i].name.length <= 0) {
+    for (var i = 0; i < questionAnswers?.length; i++) {
+      if (questionAnswers[i]?.name.length <= 0) {
         setHelperText("Jedna z odpowiedzi jest za krótka");
         setDisableButton(true);
         setError(true);
@@ -216,7 +260,7 @@ export default function QuizNewQuestionForm({
                   onChange={handleRadioChange}
                 >
                   <Grid container rowGap={2}>
-                    {questionAnswers.map((item, i) => (
+                    {questionAnswers?.map((item, i) => (
                       <Grid item xs={6} key={i}>
                         <Box sx={{ display: "flex" }} justifyContent={"left"}>
                           <TextField
@@ -265,11 +309,22 @@ export default function QuizNewQuestionForm({
                 <Box textAlign={"center"}>
                   <IconButton
                     onClick={handleAddAnswer}
-                    disabled={maxAnswers <= questionAnswers.length}
+                    disabled={maxAnswers <= questionAnswers?.length}
                   >
                     <AddCircleIcon />
                   </IconButton>
                 </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography>Rodzaj pytania</Typography>
+                <Select
+                  value={questionTypeLabel}
+                  onChange={handleQuestionTypeChange}
+                  label="Rodzaj pytania"
+                >
+                  <MenuItem value={1}>Niestandardowe</MenuItem>
+                  <MenuItem value={2}>Cyberbezpieczeństwo</MenuItem>
+                </Select>
               </Grid>
               <Grid item xs={12}>
                 <FormHelperText>{helperText}</FormHelperText>
