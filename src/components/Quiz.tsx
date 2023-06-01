@@ -1,19 +1,9 @@
-import { Button, Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useHref, useLocation } from "react-router-dom";
-import { Question } from "../models/Question";
+import { useLocation } from "react-router-dom";
 import QuizQuestion from "./QuizQuestion";
-import QuizScoreTable from "./QuizScoreTable";
-import QuizSelect from "./QuizSelect";
-import { QuestionRequest } from "../models/QuestionRequest";
 import { QuizModel } from "../models/QuizModel";
 
-// interface Props {
-//   quiz: QuizModel | null;
-// }
-
 export default function Quiz() {
-  //const [questionID, setQuestionID] = useState<number>(1);
   const [questionCounter, setQuestionCounter] = useState(1);
   const [isLast, setIsLast] = useState(false);
 
@@ -25,17 +15,8 @@ export default function Quiz() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("Num of q");
-    console.log(location.state.quiz.questions.length);
-  }, [data]);
-
-  useEffect(() => {
-    console.log("Location");
-    console.log(location.state.quiz);
     if (location.state.quiz) {
       setLoading(false);
-    } else {
-      console.log("HAHAHAHAHAH");
     }
     if (questionCounter === location.state.quiz.questions.length) {
       setIsLast(true);
@@ -43,19 +24,8 @@ export default function Quiz() {
   }, [questionCounter]);
 
   useEffect(() => {
-    console.log("isLast UE");
-    console.log(isLast);
-  }, [isLast]);
-
-  useEffect(() => {
     setQuestionCounter(location.state.quiz.idxNextQuestion);
   }, []);
-
-  function getNextQuestion() {
-    console.log("Kolejne pytanie");
-    console.log("Question counter");
-    console.log(questionCounter);
-  }
 
   return (
     <div className="quiz">
@@ -72,7 +42,6 @@ export default function Quiz() {
           questionCounter={questionCounter}
           isLast={isLast}
           setQuestionCounter={setQuestionCounter}
-          getNextQuestion={getNextQuestion}
         />
       )}
     </div>

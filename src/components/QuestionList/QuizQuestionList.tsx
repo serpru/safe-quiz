@@ -11,23 +11,17 @@ import {
   Grid,
   IconButton,
   Paper,
-  Radio,
-  RadioGroup,
   Snackbar,
-  TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Question } from "../../models/Question";
 import QuizQuestionListItem from "./QuizQuestionListItem";
 import QuizNewQuestionForm from "./QuizNewQuestionForm";
-import QuizEditForm from "../Deprecated/QuizEditForm";
 import { useLocation } from "react-router-dom";
 import { ListItem } from "../../models/ListItem";
 import { Pagination } from "../../models/Pagination";
 import { PaginationResponse } from "../../models/PaginationResponse";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -66,7 +60,6 @@ export default function QuizQuestionList() {
   }
 
   const [openAdd, setOpenAdd] = React.useState(false);
-  const [openEdit, setOpenEdit] = React.useState(false);
 
   const defaultPagination: Pagination = {
     pageNumber: 0,
@@ -93,11 +86,6 @@ export default function QuizQuestionList() {
     setPagination({ ...pagination, pageNumber: pageNum });
   };
 
-  const handleChangePage = (pageNum: number) => {
-    setCurrentPage(pageNum);
-    setPagination({ ...pagination, pageNumber: pageNum });
-  };
-
   const handlePageSize = (size: number) => {
     setPagination({
       pageNumber: 0,
@@ -116,19 +104,12 @@ export default function QuizQuestionList() {
   };
 
   const handleSubmitQuestion = (status: number) => {
-    console.log("handleSubmitQuestion");
-    console.log(status);
     handleOpenSnackbar(status);
     handleClose();
   };
 
   useEffect(() => {
-    //Promise.all([textPromise, textPromise2]);
-    //setLoading(false);
     getDataFromApi(defaultPagination);
-
-    console.log("Mock list");
-    console.log(mockQuestionList);
   }, []);
 
   function getDataFromApi(page: Pagination) {
@@ -148,12 +129,8 @@ export default function QuizQuestionList() {
       })
       .then((actualData) => {
         const obj: PaginationResponse = actualData;
-        console.log("actual data");
-        //console.log(actualData);
         setData(obj.selectedRows);
         totalSum = obj.totalSum;
-        console.log("Page count");
-        console.log(pagination.pageCount);
 
         let newButtonItems: number[] = [];
         for (
@@ -163,7 +140,6 @@ export default function QuizQuestionList() {
         ) {
           newButtonItems.push(i);
         }
-        console.log(newButtonItems);
         setButtonList(newButtonItems);
 
         setLoading(false);
@@ -175,20 +151,11 @@ export default function QuizQuestionList() {
       .finally(() => {});
   }
 
-  function reloadPage() {
-    setLoading(true);
-    getDataFromApi(pagination);
-  }
-
   //  Reload on pagination change
   useEffect(() => {
     setLoading(true);
-    console.log("Pagination totalSum check");
-    console.log(pagination);
     getDataFromApi(pagination);
   }, [pagination]);
-
-  const [correctAnswerIndex, setCorrectAnswerIndex] = useState(-1);
 
   //  Snackbar
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -227,9 +194,6 @@ export default function QuizQuestionList() {
           <Button variant="contained" onClick={() => handleToggle(undefined)}>
             Dodaj
           </Button>
-          <Button variant="contained" onClick={() => handleOpenSnackbar(400)}>
-            Toast pytanie poprawnie dodane
-          </Button>
         </Box>
         <Divider />
         {loading && <div>Ładowanie pytania</div>}
@@ -266,15 +230,6 @@ export default function QuizQuestionList() {
                 </Button>
               </ButtonGroup>
               <ButtonGroup variant="text" aria-label="text button group">
-                {/* {buttonList.map((button, index) => (
-                  <Button
-                    disabled={button === pagination.pageNumber}
-                    key={index}
-                    onClick={() => handlePageNumber(button)}
-                  >
-                    {button + 1}
-                  </Button>
-                ))} */}
                 <Button
                   disabled={pagination.pageNumber === 0}
                   onClick={() => handlePageNumber(0)}

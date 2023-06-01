@@ -7,7 +7,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { Container } from "@mui/system";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import Quiz from "./components/Quiz";
 import QuizHeader from "./components/QuizHeader";
@@ -17,24 +17,19 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Question } from "./models/Question";
 import QuizSelect from "./components/QuizSelect";
 import QuizScoreTable from "./components/QuizScoreTable";
-import QuizEditForm from "./components/QuestionList/QuizQuestionList";
 
 import { theme } from "./Theme";
 import QuizQuestionList from "./components/QuestionList/QuizQuestionList";
 import { QuizModel } from "./models/QuizModel";
+import QuizRanking from "./components/QuizRanking";
+import LoginForm from "./components/LoginForm";
 
 function App() {
   const [route, setRoute] = useState("/");
 
-  const [stepIndex, setStepIndex] = useState(1);
-  const [questionCounter, setQuestionCounter] = useState(1);
   const [answerData, setAnswerData] = useState<Question[]>([]);
 
   const [quiz, setQuiz] = useState<QuizModel | null>(null);
-
-  useEffect(() => {
-    console.log(quiz);
-  }, [quiz]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -52,20 +47,18 @@ function App() {
                 </>
               }
             />
-            <Route
-              path="/ranking"
-              element={<Button href="cennik">Test</Button>}
-            />
+            <Route path="/ranking" element={<QuizRanking></QuizRanking>} />
             <Route path="/quiz" element={<Quiz />} />
             <Route
               path="/edit-question"
               element={<QuizQuestionList></QuizQuestionList>}
             />
-            <Route path="/rejestracja" element={<div>Hello, world!4</div>} />
+            <Route path="/admin-panel" element={<div>Hello, world!4</div>} />
             <Route
               path="/score"
               element={<QuizScoreTable questions={answerData} />}
             />
+            <Route path="/login" element={<LoginForm></LoginForm>} />
           </Routes>
         </Container>
       </BrowserRouter>

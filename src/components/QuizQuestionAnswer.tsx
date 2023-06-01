@@ -1,7 +1,5 @@
 import { Box, Button, Color, Grid } from "@mui/material";
-import { color } from "@mui/system";
 import React, { ReactNode, useState } from "react";
-import { Question } from "../models/Question";
 
 interface Props {
   children?: ReactNode;

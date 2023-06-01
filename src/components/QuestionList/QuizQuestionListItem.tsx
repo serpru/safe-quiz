@@ -1,23 +1,14 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Backdrop,
   Box,
   Button,
-  Grid,
   IconButton,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { Question } from "../../models/Question";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import QuizEditForm from "../Deprecated/QuizEditForm";
 import CloseIcon from "@mui/icons-material/Close";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
 import { ListItem } from "../../models/ListItem";
 
 interface Props {
@@ -71,7 +62,6 @@ export default function QuizQuestionListItem({
       .catch((err) => {
         console.log(err.message);
       });
-    console.log(response.status);
     handleCloseDelete();
   }
 

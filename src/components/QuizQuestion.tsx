@@ -1,16 +1,12 @@
-import { Button, Grid, Paper, Typography } from "@mui/material";
-import { Container } from "@mui/system";
+import { Button, Grid } from "@mui/material";
 import Box from "@mui/system/Box";
 
-import { useEffect, useState } from "react";
 import { Question } from "../models/Question";
 import QuizQuestionAnswer from "./QuizQuestionAnswer";
-import QuizQuestionAnswers from "./QuizQuestionAnswer";
 import QuizQuestionHeader from "./QuizQuestionHeader";
-import { QuestionRequest } from "../models/QuestionRequest";
 import { QuizHistoryRequest } from "../models/QuizHistoryRequest";
-import { useLocation } from "react-router-dom";
 import { QuizModel } from "../models/QuizModel";
+import { useState } from "react";
 
 interface Props {
   idAccount: number;
@@ -19,7 +15,6 @@ interface Props {
   question: Question | undefined;
   isLast: boolean;
   setQuestionCounter: (value: number) => void;
-  getNextQuestion: () => void;
 }
 
 export default function QuizQuestion({
@@ -28,7 +23,6 @@ export default function QuizQuestion({
   questionCounter = 1,
   question,
   isLast,
-  getNextQuestion,
   setQuestionCounter,
 }: Props) {
   const [nextQButtonVisible, setNextQButtonVisible] = useState(false);
@@ -37,10 +31,6 @@ export default function QuizQuestion({
 
   async function handleClick(answerIndex: number) {
     //Post do histori api quizów
-    console.log("POST odpowiedzi usera do API");
-    console.log("Wybrana odpowiedz");
-    console.log(selectedItem);
-    console.log("Tralala");
 
     let request: QuizHistoryRequest = {
       idAccount: idAccount,
@@ -62,25 +52,18 @@ export default function QuizQuestion({
             `This is an HTTP error: The status is ${response.status}`
           );
         }
-        console.log("Wysłanie pytania do API");
         nextQuestion();
         return response.json();
       })
       .catch((err) => {
         console.log(err.message);
       });
-
-    if (isLast) {
-      console.log("Przekierowanie do tablicy wyników");
-    }
-    
   }
 
   function nextQuestion() {
     setQuestionCounter(questionCounter + 1);
     setSelectedItem(-1);
     setNextQButtonVisible(false);
-    getNextQuestion();
   }
 
   function selectAnswer(answerIndex: number) {
