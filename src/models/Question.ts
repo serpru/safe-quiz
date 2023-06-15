@@ -1,6 +1,11 @@
+import { Answer } from "./Answer";
+
+//brakuje idCorrectAnswer
 export type Question = {
-    body: string;
-    answers: string[];
-    userAnswer: number;
-    correctAnswer: number;
+    id?: number,
+    name: string;
+    noCorrectAnswer: number;
+    questionType?: number;
+    answers: Answer[];
+    userAnswer?: number;
   };

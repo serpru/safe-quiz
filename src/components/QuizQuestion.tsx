@@ -1,79 +1,132 @@
-import { Button, Grid, Paper, Typography } from "@mui/material";
+import { Button, Grid } from "@mui/material";
+import Box from "@mui/system/Box";
 
-import { useState } from "react";
 import { Question } from "../models/Question";
+import QuizQuestionAnswer from "./QuizQuestionAnswer";
+import QuizQuestionHeader from "./QuizQuestionHeader";
+import { QuizHistoryRequest } from "../models/QuizHistoryRequest";
+import { QuizModel } from "../models/QuizModel";
+import { useState } from "react";
 
 interface Props {
+  idAccount: number;
+  quiz: QuizModel;
   questionCounter?: number;
-  questionsData: Question[];
-  setStepIndex: (value: number) => void;
+  question: Question | undefined;
+  isLast: boolean;
   setQuestionCounter: (value: number) => void;
-  setQuestions: (question: Question[]) => void;
 }
 
 export default function QuizQuestion({
+  idAccount,
+  quiz,
   questionCounter = 1,
-  questionsData,
-  setStepIndex,
+  question,
+  isLast,
   setQuestionCounter,
-  setQuestions,
 }: Props) {
+  const [nextQButtonVisible, setNextQButtonVisible] = useState(false);
+  const [finishQButtonVisible, setFinishQButtonVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(-1);
 
-  function handleClick(questionIndex: number, answerIndex: number) {
+  async function handleClick(answerIndex: number) {
     //Post do histori api quizów
-    //handleClick - wyświetla przycisk na dole.
-    const updatedQuestions = questionsData.map((question, i) => {
-      if (questionIndex === i) {
-        let x = { ...question, userAnswer: answerIndex };
-        console.log("User answer" + x.userAnswer);
-        return x;
-      } else {
-        return question;
-      }
-    });
 
-    setQuestions(updatedQuestions);
+    let request: QuizHistoryRequest = {
+      idAccount: idAccount,
+      idQuestion: question?.id,
+      idQuiz: quiz.id,
+      isCorrectAnswer: question?.noCorrectAnswer === answerIndex,
+    };
 
-    console.log("Question index " + questionIndex);
-    console.log("Answer index " + answerIndex);
-
-    if (questionCounter >= questionsData.length) {
-      setStepIndex(3);
-      setQuestionCounter(1);
-      return;
-    }
-    setQuestionCounter(questionCounter + 1);
+    await fetch("http://localhost:8081/quiz-histories", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `This is an HTTP error: The status is ${response.status}`
+          );
+        }
+        nextQuestion();
+        return response.json();
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   }
+
+  function nextQuestion() {
+    setQuestionCounter(questionCounter + 1);
+    setSelectedItem(-1);
+    setNextQButtonVisible(false);
+  }
+
+  function selectAnswer(answerIndex: number) {
+    setSelectedItem(answerIndex);
+    if (isLast) {
+      setFinishQButtonVisible(true);
+    } else {
+      setNextQButtonVisible(true);
+    }
+  }
+
   return (
     <>
-      {questionsData.map((question, questionIndex) => (
-        <div key={questionIndex}>
-          {questionCounter - 1 === questionIndex && (
-            <div key={questionIndex}>
-              <Paper elevation={1}>
-                <Typography>{questionCounter}</Typography>
-                <Typography>Pytanie: {question.body}</Typography>
-              </Paper>
-              <Grid container spacing={2}>
-                {question.answers.map((answer, answerIndex) => (
-                  //nowy container za kazdym razem do usuniecia
-                  <Grid container spacing={2} key={answerIndex}>
-                    <Grid item xs={6}>
-                      <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={() => handleClick(questionIndex, answerIndex)}
-                      >
-                        {answer}
-                      </Button>
-                    </Grid>
-                  </Grid>
-                ))}
-              </Grid>
-            </div>
-          )}
+      <div className="quiz-question" key={questionCounter}>
+        <div>
+          <QuizQuestionHeader questionCounter={questionCounter}>
+            {question?.name}
+          </QuizQuestionHeader>
         </div>
-      ))}
+        <Box className="quiz-question-buttons">
+          <Grid
+            justifyContent={"space-evenly"}
+            container
+            spacing={2}
+            rowSpacing={2}
+          >
+            {question?.answers.map((answer, answerIndex) => (
+              <Grid item xs={6} key={answerIndex}>
+                <QuizQuestionAnswer
+                  selectedItem={selectedItem}
+                  answerIndex={answerIndex}
+                  onClick={() => selectAnswer(answerIndex)}
+                >
+                  {answer.name}
+                </QuizQuestionAnswer>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+        {nextQButtonVisible && (
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={() => {
+              handleClick(selectedItem);
+            }}
+          >
+            Next question
+          </Button>
+        )}
+        {finishQButtonVisible && (
+          <Button
+            variant="contained"
+            fullWidth
+            href="\score"
+            onClick={() => {
+              handleClick(selectedItem);
+            }}
+          >
+            Finish quiz
+          </Button>
+        )}
+      </div>
     </>
   );
 }

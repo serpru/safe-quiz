@@ -1,58 +1,49 @@
-import { Button, Grid, Typography } from "@mui/material";
-import React, { useState } from "react";
-import { Question } from "../models/Question";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import QuizQuestion from "./QuizQuestion";
-import QuizScoreTable from "./QuizScoreTable";
-import QuizSelect from "./QuizSelect";
-
-let questionTestObject: Question[] = [
-    {
-      body: "Kto stworzył system Linux?",
-      answers: ["Mark Zuckerberg", "Elderyu", "Linus Torvalds", "Savio"],
-      userAnswer: -1,
-      correctAnswer: 2,
-    },
-    {
-      body: "Kto chce wymyśleć pytanie z odpowiedziami?",
-      answers: [
-        "Nie ja - Elderyu",
-        "O co chodzi - Zakaridus",
-        "*cisza* - Pandek",
-        "*gra w Hadesa* - Mor",
-      ],
-      userAnswer: -1,
-      correctAnswer: 0,
-    },
-  ];
-
-const numOfQuestions = questionTestObject.length;
-
+import { QuizModel } from "../models/QuizModel";
 
 export default function Quiz() {
-    const [stepIndex, setStepIndex] = useState(1);
-    const [questionCounter, setQuestionCounter] = useState(1);
-    const [questions, setQuestionTest] = useState(questionTestObject);
+  const [questionCounter, setQuestionCounter] = useState(1);
+  const [isLast, setIsLast] = useState(false);
+
+  const location = useLocation();
+
+  // Fetch, łączenie do API, prototyp
+  const [data, setData] = useState<QuizModel | null>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (location.state.quiz) {
+      setLoading(false);
+    }
+    if (questionCounter === location.state.quiz.questions.length) {
+      setIsLast(true);
+    }
+  }, [questionCounter]);
+
+  useEffect(() => {
+    setQuestionCounter(location.state.quiz.idxNextQuestion);
+  }, []);
+
   return (
-    <div>
-    {stepIndex === 1 && (
-        <QuizSelect setStepIndex={setStepIndex} />
+    <div className="quiz">
+      {loading && <div>Ładowanie pytania</div>}
+      {error && (
+        <div>{`There is a problem fetching the post data - ${error}`}</div>
       )}
-      {stepIndex === 2 && (
+      {/* Pamietaj zeby dodac ponizej warunek !error && jesli korzystasz z API */}
+      {!loading && (
         <QuizQuestion
-          questionsData={questions}
+          quiz={location.state.quiz}
+          idAccount={location.state.idAccount}
+          question={location.state.quiz.questions[questionCounter - 1]}
           questionCounter={questionCounter}
-          setStepIndex={setStepIndex}
+          isLast={isLast}
           setQuestionCounter={setQuestionCounter}
-          setQuestions={setQuestionTest}
         />
-      )}
-      {stepIndex === 3 && (
-        <QuizScoreTable
-          questions={questions}
-          setStepIndex={setStepIndex}
-        ></QuizScoreTable>
       )}
     </div>
   );
 }
-
